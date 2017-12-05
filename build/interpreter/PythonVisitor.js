@@ -1,4 +1,4 @@
-// Generated from Python.g4 by ANTLR 4.5
+// Generated from src/interpreter/Python.g4 by ANTLR 4.5
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
 

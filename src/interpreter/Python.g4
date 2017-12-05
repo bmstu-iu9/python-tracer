@@ -94,7 +94,7 @@ decorators: decorator+;
 decorated: decorators (classdef | funcdef | async_funcdef);
 
 async_funcdef: ASYNC funcdef;
-funcdef: 'def' NAME parameters ('->' test)? ':' suite;
+funcdef: 'def' NAME parameters ('->' test)? ':' suite { console.log('HELLO FUNCTION!')};
 
 parameters: '(' (typedargslist)? ')';
 typedargslist: (tfpdef ('=' test)? (',' tfpdef ('=' test)?)* (',' (

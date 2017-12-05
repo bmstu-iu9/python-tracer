@@ -1,0 +1,9 @@
+IDENT CREATED: x
+IDENT CREATED: y
+NUMBER CREATED: 10
+REDUCE ASSIGN:
+LIST_EXPR_NODE { stmts: [ OR_LOGICAL_NODE { stmts: [Array] } ] } ASSIGN_NODE {
+  stmtsLeft: LIST_EXPR_NODE { stmts: [ [Object] ] },
+  stmtsRight: LIST_EXPR_NODE { stmts: [ [Object] ] },
+  scope: undefined }
+[object Object]

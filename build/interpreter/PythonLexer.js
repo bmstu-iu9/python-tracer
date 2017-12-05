@@ -1,4 +1,4 @@
-// Generated from Python.g4 by ANTLR 4.5
+// Generated from src/interpreter/Python.g4 by ANTLR 4.5
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
 
@@ -401,12 +401,10 @@ var serializedATN = ["\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd",
 
 var atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
 
-var decisionsToDFA = atn.decisionToState.map(function (ds, index) {
-    return new antlr4.dfa.DFA(ds, index);
-});
+var decisionsToDFA = atn.decisionToState.map( function(ds, index) { return new antlr4.dfa.DFA(ds, index); });
 
 function PythonLexer(input) {
-    antlr4.Lexer.call(this, input);
+	antlr4.Lexer.call(this, input);
     this._interp = new antlr4.atn.LexerATNSimulator(this, atn, decisionsToDFA, new antlr4.PredictionContextCache());
     return this;
 }
@@ -515,303 +513,305 @@ PythonLexer.UNKNOWN_CHAR = 97;
 PythonLexer.INDENT = 98;
 PythonLexer.DEDENT = 99;
 
-PythonLexer.modeNames = ["DEFAULT_MODE"];
 
-PythonLexer.literalNames = ['null', 'null', 'null', 'null', "'def'", "'return'",
-    "'raise'", "'from'", "'import'", "'as'", "'global'",
-    "'nonlocal'", "'assert'", "'if'", "'elif'",
-    "'else'", "'while'", "'for'", "'in'", "'try'",
-    "'finally'", "'with'", "'except'", "'lambda'",
-    "'or'", "'and'", "'not'", "'is'", "'None'",
-    "'True'", "'False'", "'class'", "'yield'",
-    "'del'", "'pass'", "'continue'", "'break'",
-    "'async'", "'await'", 'null', 'null', 'null',
-    'null', 'null', 'null', 'null', 'null', 'null',
-    'null', "'.'", "'...'", "'*'", "'('", "')'",
-    "','", "':'", "';'", "'**'", "'='", "'['",
-    "']'", "'|'", "'^'", "'&'", "'<<'", "'>>'",
-    "'+'", "'-'", "'/'", "'%'", "'//'", "'~'",
-    "'{'", "'}'", "'<'", "'>'", "'=='", "'>='",
-    "'<='", "'<>'", "'!='", "'@'", "'->'", "'+='",
-    "'-='", "'*='", "'@='", "'/='", "'%='", "'&='",
-    "'|='", "'^='", "'<<='", "'>>='", "'**='",
-    "'//='"];
+PythonLexer.modeNames = [ "DEFAULT_MODE" ];
 
-PythonLexer.symbolicNames = ['null', "STRING", "NUMBER", "INTEGER", "DEF",
-    "RETURN", "RAISE", "FROM", "IMPORT", "AS",
-    "GLOBAL", "NONLOCAL", "ASSERT", "IF", "ELIF",
-    "ELSE", "WHILE", "FOR", "IN", "TRY", "FINALLY",
-    "WITH", "EXCEPT", "LAMBDA", "OR", "AND", "NOT",
-    "IS", "NONE", "TRUE", "FALSE", "CLASS", "YIELD",
-    "DEL", "PASS", "CONTINUE", "BREAK", "ASYNC",
-    "AWAIT", "NEWLINE", "NAME", "STRING_LITERAL",
-    "BYTES_LITERAL", "DECIMAL_INTEGER", "OCT_INTEGER",
-    "HEX_INTEGER", "BIN_INTEGER", "FLOAT_NUMBER",
-    "IMAG_NUMBER", "DOT", "ELLIPSIS", "STAR",
-    "OPEN_PAREN", "CLOSE_PAREN", "COMMA", "COLON",
-    "SEMI_COLON", "POWER", "ASSIGN", "OPEN_BRACK",
-    "CLOSE_BRACK", "OR_OP", "XOR", "AND_OP", "LEFT_SHIFT",
-    "RIGHT_SHIFT", "ADD", "MINUS", "DIV", "MOD",
-    "IDIV", "NOT_OP", "OPEN_BRACE", "CLOSE_BRACE",
-    "LESS_THAN", "GREATER_THAN", "EQUALS", "GT_EQ",
-    "LT_EQ", "NOT_EQ_1", "NOT_EQ_2", "AT", "ARROW",
-    "ADD_ASSIGN", "SUB_ASSIGN", "MULT_ASSIGN",
-    "AT_ASSIGN", "DIV_ASSIGN", "MOD_ASSIGN", "AND_ASSIGN",
-    "OR_ASSIGN", "XOR_ASSIGN", "LEFT_SHIFT_ASSIGN",
-    "RIGHT_SHIFT_ASSIGN", "POWER_ASSIGN", "IDIV_ASSIGN",
-    "SKIP_", "UNKNOWN_CHAR"];
+PythonLexer.literalNames = [ 'null', 'null', 'null', 'null', "'def'", "'return'", 
+                             "'raise'", "'from'", "'import'", "'as'", "'global'", 
+                             "'nonlocal'", "'assert'", "'if'", "'elif'", 
+                             "'else'", "'while'", "'for'", "'in'", "'try'", 
+                             "'finally'", "'with'", "'except'", "'lambda'", 
+                             "'or'", "'and'", "'not'", "'is'", "'None'", 
+                             "'True'", "'False'", "'class'", "'yield'", 
+                             "'del'", "'pass'", "'continue'", "'break'", 
+                             "'async'", "'await'", 'null', 'null', 'null', 
+                             'null', 'null', 'null', 'null', 'null', 'null', 
+                             'null', "'.'", "'...'", "'*'", "'('", "')'", 
+                             "','", "':'", "';'", "'**'", "'='", "'['", 
+                             "']'", "'|'", "'^'", "'&'", "'<<'", "'>>'", 
+                             "'+'", "'-'", "'/'", "'%'", "'//'", "'~'", 
+                             "'{'", "'}'", "'<'", "'>'", "'=='", "'>='", 
+                             "'<='", "'<>'", "'!='", "'@'", "'->'", "'+='", 
+                             "'-='", "'*='", "'@='", "'/='", "'%='", "'&='", 
+                             "'|='", "'^='", "'<<='", "'>>='", "'**='", 
+                             "'//='" ];
 
-PythonLexer.ruleNames = ["STRING", "NUMBER", "INTEGER", "DEF", "RETURN",
-    "RAISE", "FROM", "IMPORT", "AS", "GLOBAL", "NONLOCAL",
-    "ASSERT", "IF", "ELIF", "ELSE", "WHILE", "FOR",
-    "IN", "TRY", "FINALLY", "WITH", "EXCEPT", "LAMBDA",
-    "OR", "AND", "NOT", "IS", "NONE", "TRUE", "FALSE",
-    "CLASS", "YIELD", "DEL", "PASS", "CONTINUE", "BREAK",
-    "ASYNC", "AWAIT", "NEWLINE", "NAME", "STRING_LITERAL",
-    "BYTES_LITERAL", "DECIMAL_INTEGER", "OCT_INTEGER",
-    "HEX_INTEGER", "BIN_INTEGER", "FLOAT_NUMBER",
-    "IMAG_NUMBER", "DOT", "ELLIPSIS", "STAR", "OPEN_PAREN",
-    "CLOSE_PAREN", "COMMA", "COLON", "SEMI_COLON",
-    "POWER", "ASSIGN", "OPEN_BRACK", "CLOSE_BRACK",
-    "OR_OP", "XOR", "AND_OP", "LEFT_SHIFT", "RIGHT_SHIFT",
-    "ADD", "MINUS", "DIV", "MOD", "IDIV", "NOT_OP",
-    "OPEN_BRACE", "CLOSE_BRACE", "LESS_THAN", "GREATER_THAN",
-    "EQUALS", "GT_EQ", "LT_EQ", "NOT_EQ_1", "NOT_EQ_2",
-    "AT", "ARROW", "ADD_ASSIGN", "SUB_ASSIGN", "MULT_ASSIGN",
-    "AT_ASSIGN", "DIV_ASSIGN", "MOD_ASSIGN", "AND_ASSIGN",
-    "OR_ASSIGN", "XOR_ASSIGN", "LEFT_SHIFT_ASSIGN",
-    "RIGHT_SHIFT_ASSIGN", "POWER_ASSIGN", "IDIV_ASSIGN",
-    "SKIP_", "UNKNOWN_CHAR", "SHORT_STRING", "LONG_STRING",
-    "LONG_STRING_ITEM", "LONG_STRING_CHAR", "STRING_ESCAPE_SEQ",
-    "NON_ZERO_DIGIT", "DIGIT", "OCT_DIGIT", "HEX_DIGIT",
-    "BIN_DIGIT", "POINT_FLOAT", "EXPONENT_FLOAT",
-    "INT_PART", "FRACTION", "EXPONENT", "SHORT_BYTES",
-    "LONG_BYTES", "LONG_BYTES_ITEM", "SHORT_BYTES_CHAR_NO_SINGLE_QUOTE",
-    "SHORT_BYTES_CHAR_NO_DOUBLE_QUOTE", "LONG_BYTES_CHAR",
-    "BYTES_ESCAPE_SEQ", "SPACES", "COMMENT", "LINE_JOINING",
-    "ID_START", "ID_CONTINUE"];
+PythonLexer.symbolicNames = [ 'null', "STRING", "NUMBER", "INTEGER", "DEF", 
+                              "RETURN", "RAISE", "FROM", "IMPORT", "AS", 
+                              "GLOBAL", "NONLOCAL", "ASSERT", "IF", "ELIF", 
+                              "ELSE", "WHILE", "FOR", "IN", "TRY", "FINALLY", 
+                              "WITH", "EXCEPT", "LAMBDA", "OR", "AND", "NOT", 
+                              "IS", "NONE", "TRUE", "FALSE", "CLASS", "YIELD", 
+                              "DEL", "PASS", "CONTINUE", "BREAK", "ASYNC", 
+                              "AWAIT", "NEWLINE", "NAME", "STRING_LITERAL", 
+                              "BYTES_LITERAL", "DECIMAL_INTEGER", "OCT_INTEGER", 
+                              "HEX_INTEGER", "BIN_INTEGER", "FLOAT_NUMBER", 
+                              "IMAG_NUMBER", "DOT", "ELLIPSIS", "STAR", 
+                              "OPEN_PAREN", "CLOSE_PAREN", "COMMA", "COLON", 
+                              "SEMI_COLON", "POWER", "ASSIGN", "OPEN_BRACK", 
+                              "CLOSE_BRACK", "OR_OP", "XOR", "AND_OP", "LEFT_SHIFT", 
+                              "RIGHT_SHIFT", "ADD", "MINUS", "DIV", "MOD", 
+                              "IDIV", "NOT_OP", "OPEN_BRACE", "CLOSE_BRACE", 
+                              "LESS_THAN", "GREATER_THAN", "EQUALS", "GT_EQ", 
+                              "LT_EQ", "NOT_EQ_1", "NOT_EQ_2", "AT", "ARROW", 
+                              "ADD_ASSIGN", "SUB_ASSIGN", "MULT_ASSIGN", 
+                              "AT_ASSIGN", "DIV_ASSIGN", "MOD_ASSIGN", "AND_ASSIGN", 
+                              "OR_ASSIGN", "XOR_ASSIGN", "LEFT_SHIFT_ASSIGN", 
+                              "RIGHT_SHIFT_ASSIGN", "POWER_ASSIGN", "IDIV_ASSIGN", 
+                              "SKIP_", "UNKNOWN_CHAR" ];
+
+PythonLexer.ruleNames = [ "STRING", "NUMBER", "INTEGER", "DEF", "RETURN", 
+                          "RAISE", "FROM", "IMPORT", "AS", "GLOBAL", "NONLOCAL", 
+                          "ASSERT", "IF", "ELIF", "ELSE", "WHILE", "FOR", 
+                          "IN", "TRY", "FINALLY", "WITH", "EXCEPT", "LAMBDA", 
+                          "OR", "AND", "NOT", "IS", "NONE", "TRUE", "FALSE", 
+                          "CLASS", "YIELD", "DEL", "PASS", "CONTINUE", "BREAK", 
+                          "ASYNC", "AWAIT", "NEWLINE", "NAME", "STRING_LITERAL", 
+                          "BYTES_LITERAL", "DECIMAL_INTEGER", "OCT_INTEGER", 
+                          "HEX_INTEGER", "BIN_INTEGER", "FLOAT_NUMBER", 
+                          "IMAG_NUMBER", "DOT", "ELLIPSIS", "STAR", "OPEN_PAREN", 
+                          "CLOSE_PAREN", "COMMA", "COLON", "SEMI_COLON", 
+                          "POWER", "ASSIGN", "OPEN_BRACK", "CLOSE_BRACK", 
+                          "OR_OP", "XOR", "AND_OP", "LEFT_SHIFT", "RIGHT_SHIFT", 
+                          "ADD", "MINUS", "DIV", "MOD", "IDIV", "NOT_OP", 
+                          "OPEN_BRACE", "CLOSE_BRACE", "LESS_THAN", "GREATER_THAN", 
+                          "EQUALS", "GT_EQ", "LT_EQ", "NOT_EQ_1", "NOT_EQ_2", 
+                          "AT", "ARROW", "ADD_ASSIGN", "SUB_ASSIGN", "MULT_ASSIGN", 
+                          "AT_ASSIGN", "DIV_ASSIGN", "MOD_ASSIGN", "AND_ASSIGN", 
+                          "OR_ASSIGN", "XOR_ASSIGN", "LEFT_SHIFT_ASSIGN", 
+                          "RIGHT_SHIFT_ASSIGN", "POWER_ASSIGN", "IDIV_ASSIGN", 
+                          "SKIP_", "UNKNOWN_CHAR", "SHORT_STRING", "LONG_STRING", 
+                          "LONG_STRING_ITEM", "LONG_STRING_CHAR", "STRING_ESCAPE_SEQ", 
+                          "NON_ZERO_DIGIT", "DIGIT", "OCT_DIGIT", "HEX_DIGIT", 
+                          "BIN_DIGIT", "POINT_FLOAT", "EXPONENT_FLOAT", 
+                          "INT_PART", "FRACTION", "EXPONENT", "SHORT_BYTES", 
+                          "LONG_BYTES", "LONG_BYTES_ITEM", "SHORT_BYTES_CHAR_NO_SINGLE_QUOTE", 
+                          "SHORT_BYTES_CHAR_NO_DOUBLE_QUOTE", "LONG_BYTES_CHAR", 
+                          "BYTES_ESCAPE_SEQ", "SPACES", "COMMENT", "LINE_JOINING", 
+                          "ID_START", "ID_CONTINUE" ];
 
 PythonLexer.grammarFileName = "Python.g4";
 
 
-var tokens = [];
+    var tokens = [];
 
-var indents = [];
+    var indents = [];
 
-var opened = 0;
+    var opened = 0;
 
-var lastToken = null;
+    var lastToken = null;
 
-// @Override
-PythonLexer.prototype.emitToken = function (t) {
-    antlr4.Lexer.prototype.emitToken.call(this, t);
-    tokens.push(t);
-};
+    // @Override
+    PythonLexer.prototype.emitToken = function (t) {
+        antlr4.Lexer.prototype.emitToken.call(this, t);
+        tokens.push(t);
+    };
 
-// @Override
-PythonLexer.prototype.nextToken = function () {
-    if (this._input.LA(1) == PythonLexer.EOF && indents.length) {
-        for (var i = tokens.length - 1; i >= 0; i--) {
-            if (tokens[i].type == PythonLexer.EOF) {
-                tokens.splice(i, 1);
-            }
-        }
-
-        this.emitToken(this.commonToken(PythonLexer.NEWLINE, "\n"));
-
-        while (indents.length) {
-            this.emitToken(this.createDedent());
-            indents.pop();
-        }
-
-        this.emitToken(this.commonToken(PythonLexer.EOF, "<EOF>"));
-    }
-
-    var next = antlr4.Lexer.prototype.nextToken.call(this);
-
-    if (next.channel == antlr4.Token.DEFAULT_CHANNEL) {
-        this.lastToken = next;
-    }
-
-    return tokens.length ? tokens.shift() : next;
-};
-
-PythonLexer.prototype.createDedent = function () {
-    var dedent = this.commonToken(PythonLexer.DEDENT, "");
-    dedent.line = this.lastToken.line;
-    return dedent;
-};
-
-PythonLexer.prototype.commonToken = function (type, text) {
-    var stop = this.getCharIndex() - 1,
-        start = text.length ? (stop - text.length + 1) : stop;
-
-    return new antlr4.CommonToken(this._tokenFactorySourcePair, type, antlr4.Lexer.DEFAULT_TOKEN_CHANNEL, start, stop);
-};
-
-// https://docs.python.org/3.1/reference/lexical_analysis.html#indentation
-function getIndentationCount(spaces) {
-    var count = 0;
-
-    spaces.split('').every(function (ch) {
-        switch (ch) {
-            case '\t':
-                count += 8 - (count % 8);
-                return false;
-            default:
-                count++;
-                return true;
-        }
-    });
-
-    return count;
-}
-
-PythonLexer.prototype.atStartOfInput = function () {
-    return this.column == 0 && this.line == 1;
-};
-
-
-PythonLexer.prototype.action = function (localctx, ruleIndex, actionIndex) {
-    switch (ruleIndex) {
-        case 38:
-            this.NEWLINE_action(localctx, actionIndex);
-            break;
-        case 51:
-            this.OPEN_PAREN_action(localctx, actionIndex);
-            break;
-        case 52:
-            this.CLOSE_PAREN_action(localctx, actionIndex);
-            break;
-        case 58:
-            this.OPEN_BRACK_action(localctx, actionIndex);
-            break;
-        case 59:
-            this.CLOSE_BRACK_action(localctx, actionIndex);
-            break;
-        case 71:
-            this.OPEN_BRACE_action(localctx, actionIndex);
-            break;
-        case 72:
-            this.CLOSE_BRACE_action(localctx, actionIndex);
-            break;
-        default:
-            throw "No registered action for:" + ruleIndex;
-    }
-};
-
-PythonLexer.prototype.NEWLINE_action = function (localctx, actionIndex) {
-    switch (actionIndex) {
-        case 0:
-
-            var newLine = this.text.replace(/[^\r\n\f]+/g, ""),
-                spaces = this.text.replace(/[\r\n\f]+/g, ""),
-                next = this._input.LA(1);
-
-            if (opened > 0 || next == '\r' || next == '\n' || next == '\f' || next == '#') {
-                this.skip();
-            }
-            else {
-                this.emitToken(this.commonToken(PythonLexer.NEWLINE, newLine));
-                var indent = getIndentationCount(spaces),
-                    previous = indents.length ? indents[indents.length - 1] : 0;
-                if (indent === previous) {
-                    this.skip();
-                }
-                else if (indent > previous) {
-                    indents.push(indent);
-                    this.emitToken(this.commonToken(PythonLexer.INDENT, spaces));
-                }
-                else {
-                    while (indents.length && indents[indents.length - 1] > indent) {
-                        this.emitToken(this.createDedent());
-                        indents.pop();
-                    }
+    // @Override
+    PythonLexer.prototype.nextToken = function () {
+        if (this._input.LA(1) == PythonLexer.EOF && indents.length) {
+            for (var i = tokens.length - 1; i >= 0; i--) {
+                if (tokens[i].type == PythonLexer.EOF) {
+                    tokens.splice(i, 1);
                 }
             }
 
-            break;
-        default:
-            throw "No registered action for:" + actionIndex;
+            this.emitToken(this.commonToken(PythonLexer.NEWLINE, "\n"));
+
+            while (indents.length) {
+                this.emitToken(this.createDedent());
+                indents.pop();
+            }
+
+            this.emitToken(this.commonToken(PythonLexer.EOF, "<EOF>"));
+        }
+
+        var next = antlr4.Lexer.prototype.nextToken.call(this);
+
+        if (next.channel == antlr4.Token.DEFAULT_CHANNEL) {
+            this.lastToken = next;
+        }
+
+        return tokens.length ? tokens.shift() : next;
+    };
+
+    PythonLexer.prototype.createDedent = function() {
+        var dedent = this.commonToken(PythonLexer.DEDENT, "");
+        dedent.line = this.lastToken.line;
+        return dedent;
+    };
+
+    PythonLexer.prototype.commonToken = function(type, text) {
+        var stop = this.getCharIndex() - 1,
+            start = text.length ? (stop - text.length + 1) : stop;
+
+        return new antlr4.CommonToken(this._tokenFactorySourcePair, type, antlr4.Lexer.DEFAULT_TOKEN_CHANNEL, start, stop);
+    };
+
+    // https://docs.python.org/3.1/reference/lexical_analysis.html#indentation
+    function getIndentationCount(spaces) {
+        var count = 0;
+
+        spaces.split('').every(function (ch) {
+            switch (ch) {
+                case '\t':
+                    count += 8 - (count % 8);
+                    return false;
+                default:
+                    count++;
+                    return true;
+            }
+        });
+
+        return count;
+    }
+
+    PythonLexer.prototype.atStartOfInput = function() {
+        return this.column == 0 && this.line == 1;
+    };
+
+
+PythonLexer.prototype.action = function(localctx, ruleIndex, actionIndex) {
+	switch (ruleIndex) {
+	case 38:
+		this.NEWLINE_action(localctx, actionIndex);
+		break;
+	case 51:
+		this.OPEN_PAREN_action(localctx, actionIndex);
+		break;
+	case 52:
+		this.CLOSE_PAREN_action(localctx, actionIndex);
+		break;
+	case 58:
+		this.OPEN_BRACK_action(localctx, actionIndex);
+		break;
+	case 59:
+		this.CLOSE_BRACK_action(localctx, actionIndex);
+		break;
+	case 71:
+		this.OPEN_BRACE_action(localctx, actionIndex);
+		break;
+	case 72:
+		this.CLOSE_BRACE_action(localctx, actionIndex);
+		break;
+	default:
+		throw "No registered action for:" + ruleIndex;
+	}
+};
+
+PythonLexer.prototype.NEWLINE_action = function(localctx , actionIndex) {
+	switch (actionIndex) {
+	case 0:
+
+				var newLine = this.text.replace(/[^\r\n\f]+/g, ""),
+		            spaces = this.text.replace(/[\r\n\f]+/g, ""),
+		            next = this._input.LA(1);
+
+		        if (opened > 0 || next == '\r' || next == '\n' || next == '\f' || next == '#') {
+		            this.skip();
+		        }
+		        else {
+		            this.emitToken(this.commonToken(PythonLexer.NEWLINE, newLine));
+		            var indent = getIndentationCount(spaces),
+		                previous = indents.length ? indents[indents.length - 1] : 0;
+		            if (indent === previous) {
+		                this.skip();
+		            }
+		            else if (indent > previous) {
+		                indents.push(indent);
+		                this.emitToken(this.commonToken(PythonLexer.INDENT, spaces));
+		            }
+		            else {
+		                while (indents.length && indents[indents.length - 1] > indent) {
+		                    this.emitToken(this.createDedent());
+		                    indents.pop();
+		                }
+		            }
+		        }
+		   
+		break;
+	default:
+		throw "No registered action for:" + actionIndex;
+	}
+};
+
+PythonLexer.prototype.OPEN_PAREN_action = function(localctx , actionIndex) {
+	switch (actionIndex) {
+	case 1:
+		opened++;
+		break;
+	default:
+		throw "No registered action for:" + actionIndex;
+	}
+};
+
+PythonLexer.prototype.CLOSE_PAREN_action = function(localctx , actionIndex) {
+	switch (actionIndex) {
+	case 2:
+		opened--;
+		break;
+	default:
+		throw "No registered action for:" + actionIndex;
+	}
+};
+
+PythonLexer.prototype.OPEN_BRACK_action = function(localctx , actionIndex) {
+	switch (actionIndex) {
+	case 3:
+		opened++;
+		break;
+	default:
+		throw "No registered action for:" + actionIndex;
+	}
+};
+
+PythonLexer.prototype.CLOSE_BRACK_action = function(localctx , actionIndex) {
+	switch (actionIndex) {
+	case 4:
+		opened--;
+		break;
+	default:
+		throw "No registered action for:" + actionIndex;
+	}
+};
+
+PythonLexer.prototype.OPEN_BRACE_action = function(localctx , actionIndex) {
+	switch (actionIndex) {
+	case 5:
+		opened++;
+		break;
+	default:
+		throw "No registered action for:" + actionIndex;
+	}
+};
+
+PythonLexer.prototype.CLOSE_BRACE_action = function(localctx , actionIndex) {
+	switch (actionIndex) {
+	case 6:
+		opened--;
+		break;
+	default:
+		throw "No registered action for:" + actionIndex;
+	}
+};
+PythonLexer.prototype.sempred = function(localctx, ruleIndex, predIndex) {
+	switch (ruleIndex) {
+		case 38:
+			return this.NEWLINE_sempred(localctx, predIndex);
+    	default:
+    		throw "No registered predicate for:" + ruleIndex;
     }
 };
 
-PythonLexer.prototype.OPEN_PAREN_action = function (localctx, actionIndex) {
-    switch (actionIndex) {
-        case 1:
-            opened++;
-            break;
-        default:
-            throw "No registered action for:" + actionIndex;
-    }
+PythonLexer.prototype.NEWLINE_sempred = function(localctx, predIndex) {
+	switch(predIndex) {
+		case 0:
+			return this.atStartOfInput();
+		default:
+			throw "No predicate with index:" + predIndex;
+	}
 };
 
-PythonLexer.prototype.CLOSE_PAREN_action = function (localctx, actionIndex) {
-    switch (actionIndex) {
-        case 2:
-            opened--;
-            break;
-        default:
-            throw "No registered action for:" + actionIndex;
-    }
-};
-
-PythonLexer.prototype.OPEN_BRACK_action = function (localctx, actionIndex) {
-    switch (actionIndex) {
-        case 3:
-            opened++;
-            break;
-        default:
-            throw "No registered action for:" + actionIndex;
-    }
-};
-
-PythonLexer.prototype.CLOSE_BRACK_action = function (localctx, actionIndex) {
-    switch (actionIndex) {
-        case 4:
-            opened--;
-            break;
-        default:
-            throw "No registered action for:" + actionIndex;
-    }
-};
-
-PythonLexer.prototype.OPEN_BRACE_action = function (localctx, actionIndex) {
-    switch (actionIndex) {
-        case 5:
-            opened++;
-            break;
-        default:
-            throw "No registered action for:" + actionIndex;
-    }
-};
-
-PythonLexer.prototype.CLOSE_BRACE_action = function (localctx, actionIndex) {
-    switch (actionIndex) {
-        case 6:
-            opened--;
-            break;
-        default:
-            throw "No registered action for:" + actionIndex;
-    }
-};
-PythonLexer.prototype.sempred = function (localctx, ruleIndex, predIndex) {
-    switch (ruleIndex) {
-        case 38:
-            return this.NEWLINE_sempred(localctx, predIndex);
-        default:
-            throw "No registered predicate for:" + ruleIndex;
-    }
-};
-
-PythonLexer.prototype.NEWLINE_sempred = function (localctx, predIndex) {
-    switch (predIndex) {
-        case 0:
-            return this.atStartOfInput();
-        default:
-            throw "No predicate with index:" + predIndex;
-    }
-};
 
 
 exports.PythonLexer = PythonLexer;
