@@ -20,7 +20,7 @@ class IDENT_NODE {
     }
 }
 
-class NUMBER_NODE {
+class NUMERIC_NODE {
     constructor(value) {
         console.log('NUMBER CREATED: ' + value);
         this.value = value;
@@ -31,7 +31,7 @@ class NUMBER_NODE {
     }
 
     toString() {
-        return +this.value;
+        return this.value;
     }
 
     valueOf() {
@@ -52,11 +52,15 @@ class STRING_NODE {
 
 class BOOLEAN_NODE {
     constructor(value) {
-        this.value = value;
+        this.value = !!value;
     }
 
     reduce() {
         return this
+    }
+
+    isTrue() {
+        return this.value;
     }
 
     toString() {
@@ -64,7 +68,7 @@ class BOOLEAN_NODE {
     }
 
     valueOf() {
-        return this.value ? 'True' : 'False';
+        return this.value;
     }
 }
 
@@ -82,7 +86,35 @@ class NONE_NODE {
     }
 
     valueOf() {
-        return 'None';
+        return null
+    }
+}
+
+class FUNCTION_NODE {
+    constructor(name, args, body) {
+        this.name = name;
+        this.args = {};
+        this.body = body || [];
+
+        for (let i = 0; i < body.length; i++) {
+            while (body[i].length) {
+                body[i] = body[i][0];
+            }
+        }
+    }
+
+    reduce(outerScope) {
+        this.scope = new Scope(outerScope);
+
+        outerScope.putSymbol(this.name, this);
+
+        Object.keys(this.args).forEach(
+                argName => this.scope.putSymbol(argName, this.args[argName])
+        );
+    }
+
+    execute() {
+        this.body.map(stmt => stmt.reduce(this.scope))
     }
 }
 
@@ -94,37 +126,11 @@ class PROGRAM_NODE {
     }
 
     execute() {
-        this.body.forEach(stmt => stmt.reduce());
+        this.body.forEach(
+                stmt => stmt.reduce(this.scope)
+        );
 
         this.scope.print();
-    }
-}
-
-class FUNCTION_NODE {
-    constructor(name, args, body, outerScope) {
-        this.name = name;
-        this.args = {};
-        this.body = body || [];
-        this.scope = new Scope(outerScope);
-
-        args.forEach(arg => this.scope.putSymbol(arg));
-
-        for (let i = 0; i < body.length; i++) {
-            while (body[i].length) {
-                body[i] = body[i][0];
-            }
-        }
-    }
-
-    reduce() {
-        return this.body.map(stmt => {
-            try {
-                return stmt.reduce();
-            } catch (e) {
-                console.log('REDUCE ERROR: ');
-                console.log(stmt);
-            }
-        })
     }
 }
 
@@ -135,7 +141,7 @@ class IF_NODE {
         this.elseStmt = elseStmt;
     }
 
-    reduce() {
+    reduce(outerScope) {
 
     }
 }
@@ -146,28 +152,27 @@ class WHILE_NODE {
         this.stmt = stmt;
     }
 
-    reduce() {
+    reduce(outerScope) {
 
     }
 }
 
 class ASSIGN_NODE {
-    constructor(stmtsLeft, stmtsRight, scope) {
+    constructor(stmtsLeft, stmtsRight) {
         this.stmtsLeft = stmtsLeft;
         this.stmtsRight = stmtsRight;
-        this.scope = scope;
     }
 
-    reduce() {
+    reduce(outerScope) {
 
-        let res = null;
+        let res = new NONE_NODE();
 
         stmtsLeft.map(
-            stmt => stmt.reduce()
+            stmt => stmt.reduce(outerScope)
         ).forEach((stmt, i) => {
             if (stmt instanceof IDENT_NODE && this.stmtsRight[i]) {
-                res = this.stmtsRight[i].reduce();
-                this.scope.putSymbol(stmt.name, res.valueOf());
+                res = this.stmtsRight[i].reduce(outerScope);
+                outerScope.putSymbol(stmt.name, res);
             }
         });
 
@@ -180,19 +185,18 @@ class OR_LOGICAL_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-
-        console.log('REDUCE OR:');
-
-        let arr = this.stmts.map(
-            stmt => stmt.reduce()
-        );
+    reduce(outerScope) {
+        console.log('REDUCE LOGICAL OR:');
 
         for (let i = 0; i < this.stmts.length; i++) {
-            if (arr[i].valueOf()) {
-                return arr[i];
+            let result = new BOOLEAN_NODE(this.stmts[i].reduce(outerScope));
+
+            if (result.isTrue()) {
+                return result;
             }
         }
+
+        return new BOOLEAN_NODE(false);
     }
 }
 
@@ -201,20 +205,18 @@ class AND_LOGICAL_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        console.log('REDUCE AND:');
-
-        let arr = this.stmts.map(
-            stmt => stmt.reduce()
-        );
+    reduce(outerScope) {
+        console.log('REDUCE LOGICAL AND:');
 
         for (let i = 0; i < this.stmts.length; i++) {
-            if (!arr[i].valueOf()) {
-                return new BOOLEAN_NODE(false)
+            let result = new BOOLEAN_NODE(this.stmts[i].reduce(outerScope));
+
+            if (!result.isTrue()) {
+                return result;
             }
         }
 
-        return arr[arr.length - 1];
+        return new BOOLEAN_NODE(true);
     }
 }
 
@@ -223,8 +225,10 @@ class NOT_LOGICAL_NODE {
         this.stmt = stmt;
     }
 
-    reduce() {
-        //TODO
+    reduce(outerScope) {
+        return new BOOLEAN_NODE(
+            !(new BOOLEAN_NODE(this.stmt))
+        );
     }
 }
 
@@ -233,15 +237,14 @@ class RETURN_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
+    reduce(outerScope) {
 
         console.log('RETURN REDUCE:');
 
         let len = this.stmts.length;
 
-        let res = len ? this.stmts[len - 1].reduce() : null;
+        return len ? this.stmts[len - 1].reduce(outerScope) : new NONE_NODE();
 
-        return res;
     }
 }
 
@@ -250,11 +253,11 @@ class OR_BIT_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        let res = this.stmts[0].reduce();
+    reduce(outerScope) {
+        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope));
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res |= this.stmts[i].reduce()
+            res = new NUMERIC_NODE(res | new NUMERIC_NODE(this.stmts[i].reduce(outerScope)));
         }
 
         return res;
@@ -266,11 +269,11 @@ class AND_BIT_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        let res = this.stmts[0].reduce();
+    reduce(outerScope) {
+        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope));
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res &= this.stmts[i].reduce()
+            res = new NUMERIC_NODE(res & new NUMERIC_NODE(this.stmts[i].reduce(outerScope)));
         }
 
         return res;
@@ -282,11 +285,11 @@ class XOR_BIT_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        let res = this.stmts[0].reduce();
+    reduce(outerScope) {
+        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope));
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res ^= this.stmts[i].reduce()
+            res = new NUMERIC_NODE(res ^ new NUMERIC_NODE(this.stmts[i].reduce(outerScope)));
         }
 
         return res;
@@ -300,15 +303,15 @@ class SHIFT_BIT_NODE {
         this.stmtRight = stmtRight;
     }
 
-    reduce() {
-        let left = this.stmtLeft.reduce(),
-            right = this.stmtRight ? this.stmtRight.reduce() : null;
+    reduce(outerScope) {
+        let left = new NUMERIC_NODE(this.stmtLeft.reduce(outerScope)),
+            right = this.stmtRight ? new NUMERIC_NODE(this.stmtRight.reduce(outerScope)) : null;
 
         if (right === null) {
             return left;
         }
 
-        return this.op === '>>' ? left >> right : left << right;
+        return this.op === '>>' ? new NUMERIC_NODE(left >> right) : new NUMERIC_NODE(left << right);
     }
 }
 
@@ -317,11 +320,11 @@ class PLUS_BINARY_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        let res = this.stmts[0].reduce();
+    reduce(outerScope) {
+        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope));
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res += this.stmts[i].reduce()
+            res = new NUMERIC_NODE(res + new NUMERIC_NODE(this.stmts[i].reduce(outerScope)));
         }
 
         return res;
@@ -333,11 +336,11 @@ class MINUS_BINARY_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        let res = this.stmts[0].reduce();
+    reduce(outerScope) {
+        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope));
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res -= this.stmts[i].reduce()
+            res = new NUMERIC_NODE(res - new NUMERIC_NODE(this.stmts[i].reduce(outerScope)));
         }
 
         return res;
@@ -349,11 +352,11 @@ class MUL_BINARY_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        let res = this.stmts[0].reduce();
+    reduce(outerScope) {
+        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope));
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res *= this.stmts[i].reduce()
+            res = new NUMERIC_NODE(res * new NUMERIC_NODE(this.stmts[i].reduce(outerScope)));
         }
 
         return res;
@@ -365,11 +368,11 @@ class DIV_BINARY_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        let res = this.stmts[0].reduce();
+    reduce(outerScope) {
+        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope));
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res /= this.stmts[i].reduce()
+            res = new NUMERIC_NODE(res / new NUMERIC_NODE(this.stmts[i].reduce(outerScope)));
         }
 
         return res;
@@ -381,11 +384,11 @@ class MOD_BINARY_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
-        let res = this.stmts[0].reduce();
+    reduce(outerScope) {
+        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope));
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res %= this.stmts[i].reduce()
+            res = new NUMERIC_NODE(res % new NUMERIC_NODE(this.stmts[i].reduce(outerScope)));
         }
 
         return res;
@@ -397,8 +400,8 @@ class PLUS_UNARY_NODE {
         this.stmt = stmt;
     }
 
-    reduce() {
-        return +this.stmt.reduce();
+    reduce(outerScope) {
+        return new NUMERIC_NODE( + new NUMERIC_NODE(this.stmt.reduce(outerScope)) );
     }
 }
 
@@ -407,8 +410,8 @@ class MINUS_UNARY_NODE {
         this.stmt = stmt;
     }
 
-    reduce() {
-        return -this.stmt.reduce();
+    reduce(outerScope) {
+        return new NUMERIC_NODE( - new NUMERIC_NODE(this.stmt.reduce(outerScope)) );
     }
 }
 
@@ -417,8 +420,8 @@ class NOT_BIT_NODE {
         this.stmt = stmt;
     }
 
-    reduce() {
-        return  ~this.stmt.reduce();
+    reduce(outerScope) {
+        return new NUMERIC_NODE( ~ new NUMERIC_NODE(this.stmt.reduce(outerScope)) );
     }
 }
 
@@ -428,11 +431,11 @@ class POWER_NODE {
         this.stmtRight = stmtRight;
     }
 
-    reduce() {
-        let base = this.stmtLeft.reduce(),
-            count = this.stmtRight ? this.stmtRight.reduce() : 1;
+    reduce(outerScope) {
+        let base = new NUMERIC_NODE(this.stmtLeft.reduce(outerScope)),
+            count = this.stmtRight ? new NUMERIC_NODE(this.stmtRight.reduce(outerScope)) : new NUMERIC_NODE(1);
 
-        return Math.pow(base, count);
+        return new NUMERIC_NODE(Math.pow(base, count));
     }
 }
 
@@ -443,25 +446,25 @@ class COMPARISON_NODE {
         this.stmtRight = stmtRight;
     }
 
-    reduce() {
+    reduce(outerScope) {
 
         console.log('REDUCE COMPARISON:');
 
-        let left = this.stmtLeft.reduce(),
-            right = this.stmtRight ? this.stmtRight.reduce() : null;
+        let left = new BOOLEAN_NODE(this.stmtLeft.reduce(outerScope)),
+            right = this.stmtRight ? new BOOLEAN_NODE(this.stmtRight.reduce(outerScope)) : null;
 
         if (right === null) {
             return left;
         }
 
         switch (this.op) {
-            case '<': return left < right;
-            case '>': return left > right;
-            case '>=': return left >= right;
-            case '<=': return left <= right;
-            case '==': return left == right;
+            case '<': return new BOOLEAN_NODE(left < right);
+            case '>': return new BOOLEAN_NODE(left > right);
+            case '>=': return new BOOLEAN_NODE(left >= right);
+            case '<=': return new BOOLEAN_NODE(left <= right);
+            case '==': return new BOOLEAN_NODE(left === right);
             case '!=':
-            case '<>': return left != right;
+            case '<>': return new BOOLEAN_NODE(left !== right);
         }
     }
 }
@@ -471,10 +474,10 @@ class LIST_EXPR_NODE {
         this.stmts = stmts;
     }
 
-    reduce() {
+    reduce(outerScope) {
         let len = this.stmts.length;
 
-        return len ? this.stmts[len - 1].reduce() : null;
+        return len ? this.stmts[len - 1].reduce(outerScope) : new NONE_NODE();
     }
 }
 
@@ -501,10 +504,11 @@ module.exports = {
     NOT_BIT_NODE,
     POWER_NODE,
     IDENT_NODE,
-    NUMBER_NODE,
+    NUMERIC_NODE,
     STRING_NODE,
     BOOLEAN_NODE,
     COMPARISON_NODE,
     MOD_BINARY_NODE,
-    LIST_EXPR_NODE
+    LIST_EXPR_NODE,
+    NONE_NODE
 };

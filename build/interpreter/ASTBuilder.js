@@ -5,17 +5,23 @@ class ASTBuilder {
         return this;
     }
 
-    getFunction(ctx, scope) {
+    getFunction(ctx) {
         return new ASTNodes.FUNCTION_NODE(
             ctx.NAME().getText(),
             this.getParameters(ctx.parameters()),
-            this.getSuite(ctx.suite()),
-            scope
+            this.getSuite(ctx.suite())
         );
     }
 
     getParameters(ctx) {
-        return ctx.typedargslist().tfpdef().map(argctx => argctx.NAME().getText());
+
+        let args = {};
+
+        ctx.typedargslist().tfpdef().forEach(argctx =>
+            args[argctx.NAME().getText()] = new ASTNodes.NONE_NODE()
+        );
+
+        return args;
     }
 
     getSuite(ctx) {
@@ -199,7 +205,7 @@ class ASTBuilder {
                         this.getFactor(ctx.factor(1))
                     ])
                 );
-                case '/': return this.getTermRec(
+                case '%': return this.getTermRec(
                     ctx.children.slice(2),
                     new ASTNodes.MOD_BINARY_NODE([
                         stmt,
@@ -240,11 +246,11 @@ class ASTBuilder {
         if (ctx.NAME()) {
             return new ASTNodes.IDENT_NODE(ctx.NAME().getText());
         } else if (ctx.NUMBER()) {
-            return new ASTNodes.NUMBER_NODE(ctx.NUMBER().getText());
+            return new ASTNodes.NUMERIC_NODE(ctx.NUMBER().getText());
         } else if (ctx.STRING()) {
             return new ASTNodes.STRING_NODE(ctx.STRING().getText());
         } else if (['True', 'False'].indexOf(ctx.children[0].getText()) !== -1) {
-            return new ASTNodes.BOOLEAN_NODE(ctx.children[0].getText())
+            return new ASTNodes.BOOLEAN_NODE(ctx.children[0].getText() === 'True')
         }
     }
 

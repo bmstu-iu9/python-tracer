@@ -15,6 +15,6 @@ module.exports = function(externalScope) {
     };
 
     this.print = function() {
-        console.log(localSymbolTable.toString())
+        console.log(JSON.stringify(localSymbolTable, null, ' '))
     }
 };
