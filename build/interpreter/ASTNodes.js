@@ -1,13 +1,39 @@
 var Scope = require('./Scope');
 
-class IDENT_NODE {
-    constructor(name, scope) {
-        console.log('IDENT CREATED: ' + name);
+class CONTROL_FLOW_NODE {
+
+}
+
+class UNDEFINED_NODE {
+    constructor(name) {
         this.name = name;
-        this.scope = scope;
+    }
+    reduce() {
+        throw new Error(`Обращение к несуществующей переменной "${this.name}"`)
     }
 
-    reduce() {
+    toString() {
+        return 'undefined';
+    }
+
+    valueOf() {
+        return 'undefined';
+    }
+}
+
+class IDENT_NODE {
+    constructor(name) {
+        this.name = name;
+        this.scope = new Scope();
+    }
+
+    reduce(outerScope) {
+        this.scope = outerScope;
+
+        if (!this.scope.hasSymbol(this.name)) {
+            this.scope.putSymbol(this.name, new UNDEFINED_NODE(this.name));
+        }
+
         return this;
     }
 
@@ -22,7 +48,11 @@ class IDENT_NODE {
 
 class NUMERIC_NODE {
     constructor(value) {
-        console.log('NUMBER CREATED: ' + value);
+
+        if (typeof value === 'object') {
+            value = value.valueOf();
+        }
+
         this.value = value;
     }
 
@@ -82,19 +112,20 @@ class NONE_NODE {
     }
 
     toString() {
-        return 'None';
+        return this
     }
 
     valueOf() {
-        return null
+        return this
     }
 }
 
 class FUNCTION_NODE {
     constructor(name, args, body) {
         this.name = name;
-        this.args = {};
+        this.args = args || {};
         this.body = body || [];
+        this.scope = new Scope(null, this);
 
         for (let i = 0; i < body.length; i++) {
             while (body[i].length) {
@@ -104,38 +135,17 @@ class FUNCTION_NODE {
     }
 
     reduce(outerScope) {
-        this.scope = new Scope(outerScope);
-
         outerScope.putSymbol(this.name, this);
 
-        Object.keys(this.args).forEach(
-                argName => this.scope.putSymbol(argName, this.args[argName])
-        );
-    }
-
-    execute() {
-        this.body.map(stmt => stmt.reduce(this.scope))
+        return this;
     }
 }
 
-class PROGRAM_NODE {
-
-    constructor(body) {
-        this.scope = new Scope();
-        this.body = body || [];
-    }
-
-    execute() {
-        this.body.forEach(
-                stmt => stmt.reduce(this.scope)
-        );
-
-        this.scope.print();
-    }
-}
-
-class IF_NODE {
+class IF_NODE extends CONTROL_FLOW_NODE {
     constructor(condition, ifStmt, elseStmt) {
+
+        super();
+
         this.condition = condition;
         this.ifStmt = ifStmt;
         this.elseStmt = elseStmt;
@@ -143,35 +153,62 @@ class IF_NODE {
 
     reduce(outerScope) {
 
+        console.log('if');
+
+        var cond = this.condition.reduce(outerScope).valueOf();
+
+        if (cond) {
+            return this.ifStmt;
+        } else if (this.elseStmt) {
+            return this.elseStmt;
+        } else {
+            return []
+        }
     }
 }
 
-class WHILE_NODE {
-    constructor(condition, stmt) {
+class WHILE_NODE extends CONTROL_FLOW_NODE {
+    constructor(condition, stmts) {
+
+        super();
+
         this.condition = condition;
-        this.stmt = stmt;
+        this.stmts = stmts;
     }
 
     reduce(outerScope) {
 
+        console.log('while');
+
+        let cond = this.condition.reduce(outerScope).valueOf();
+
+        if (cond) {
+            return this.stmts.concat(this);
+        }
+
+        return [];
     }
 }
 
 class ASSIGN_NODE {
-    constructor(stmtsLeft, stmtsRight) {
-        this.stmtsLeft = stmtsLeft;
-        this.stmtsRight = stmtsRight;
+    constructor(listLeft, listRight) {
+        this.listLeft = listLeft;
+        this.listRight = listRight;
     }
 
     reduce(outerScope) {
 
-        let res = new NONE_NODE();
+        let res = new NONE_NODE(),
+            left = this.listLeft.reduce(outerScope),
+            right = this.listRight.reduce(outerScope);
 
-        stmtsLeft.map(
-            stmt => stmt.reduce(outerScope)
-        ).forEach((stmt, i) => {
-            if (stmt instanceof IDENT_NODE && this.stmtsRight[i]) {
-                res = this.stmtsRight[i].reduce(outerScope);
+        if (!left.length) left = [left];
+        if (!right.length) right = [right];
+
+        left.forEach((stmt, i) => {
+            if ((stmt instanceof IDENT_NODE) && right[i]) {
+                res = ((right[i] instanceof IDENT_NODE) ? right[i].valueOf() : right[i]);
+                console.log(`${stmt.name} = ${res}`);
                 outerScope.putSymbol(stmt.name, res);
             }
         });
@@ -188,15 +225,20 @@ class OR_LOGICAL_NODE {
     reduce(outerScope) {
         console.log('REDUCE LOGICAL OR:');
 
-        for (let i = 0; i < this.stmts.length; i++) {
-            let result = new BOOLEAN_NODE(this.stmts[i].reduce(outerScope));
+        let result = new NONE_NODE();
 
-            if (result.isTrue()) {
+        for (let i = 0; i < this.stmts.length; i++) {
+
+            result = this.stmts[i].reduce(outerScope);
+
+            let boolNode = new BOOLEAN_NODE(result);
+
+            if (boolNode.isTrue()) {
                 return result;
             }
         }
 
-        return new BOOLEAN_NODE(false);
+        return result;
     }
 }
 
@@ -208,15 +250,20 @@ class AND_LOGICAL_NODE {
     reduce(outerScope) {
         console.log('REDUCE LOGICAL AND:');
 
-        for (let i = 0; i < this.stmts.length; i++) {
-            let result = new BOOLEAN_NODE(this.stmts[i].reduce(outerScope));
+        let result = new NONE_NODE();
 
-            if (!result.isTrue()) {
+        for (let i = 0; i < this.stmts.length; i++) {
+
+            result = this.stmts[i].reduce(outerScope);
+
+            let boolNode = new BOOLEAN_NODE(result);
+
+            if (!boolNode.isTrue()) {
                 return result;
             }
         }
 
-        return new BOOLEAN_NODE(true);
+        return result;
     }
 }
 
@@ -232,8 +279,11 @@ class NOT_LOGICAL_NODE {
     }
 }
 
-class RETURN_NODE {
+class RETURN_NODE extends CONTROL_FLOW_NODE {
     constructor(stmts) {
+
+        super();
+
         this.stmts = stmts;
     }
 
@@ -243,7 +293,7 @@ class RETURN_NODE {
 
         let len = this.stmts.length;
 
-        return len ? this.stmts[len - 1].reduce(outerScope) : new NONE_NODE();
+        return len ? this.stmts[len - 1].reduce(outerScope).valueOf() : new NONE_NODE();
 
     }
 }
@@ -448,11 +498,10 @@ class COMPARISON_NODE {
 
     reduce(outerScope) {
 
-        console.log('REDUCE COMPARISON:');
+        let left = this.stmtLeft.reduce(outerScope).valueOf(),
+            right = this.stmtRight ? this.stmtRight.reduce(outerScope).valueOf() : null;
 
-        let left = new BOOLEAN_NODE(this.stmtLeft.reduce(outerScope)),
-            right = this.stmtRight ? new BOOLEAN_NODE(this.stmtRight.reduce(outerScope)) : null;
-
+        console.log(`${left} ${this.op} ${right}`);
         if (right === null) {
             return left;
         }
@@ -462,9 +511,9 @@ class COMPARISON_NODE {
             case '>': return new BOOLEAN_NODE(left > right);
             case '>=': return new BOOLEAN_NODE(left >= right);
             case '<=': return new BOOLEAN_NODE(left <= right);
-            case '==': return new BOOLEAN_NODE(left === right);
+            case '==': return new BOOLEAN_NODE(left == right);
             case '!=':
-            case '<>': return new BOOLEAN_NODE(left !== right);
+            case '<>': return new BOOLEAN_NODE(left != right);
         }
     }
 }
@@ -475,14 +524,107 @@ class LIST_EXPR_NODE {
     }
 
     reduce(outerScope) {
-        let len = this.stmts.length;
-
-        return len ? this.stmts[len - 1].reduce(outerScope) : new NONE_NODE();
+        return this.stmts.map(stmt => stmt.reduce(outerScope))
     }
 }
 
+class FUNCTION_CALL_NODE {
+    constructor(ident, arglist) {
+
+        this.ident = ident;
+        this.arglist = arglist;
+    }
+
+    reduce(outerScope) {
+        var node = this.ident.reduce(outerScope),
+            functionNode = node.valueOf();
+
+        if (node instanceof IDENT_NODE) {
+            if (functionNode instanceof FUNCTION_NODE) {
+
+                let scope = new Scope(outerScope, functionNode),
+                    args = this.arglist.reduce(outerScope);
+
+                Object.keys(functionNode.args).forEach(
+                    (argName, index) => {
+                        let symbol = args[index] || (new UNDEFINED_NODE());
+
+                        console.log(`${argName} = ${symbol}`);
+
+                        scope.putSymbol(argName, symbol);
+
+                    }
+                );
+
+                let queue = functionNode.body.slice(),
+                    node = null;
+
+                while (queue.length) {
+
+                    node = queue.shift();
+
+                    // console.log('*****');
+                    // console.log(node);
+                    // console.log('-----');
+
+                    if (node instanceof CONTROL_FLOW_NODE) {
+                        if (node instanceof RETURN_NODE) {
+                            return node.reduce(scope);
+                        } else {
+                            queue.unshift(...node.reduce(scope));
+                        }
+                    } else {
+                        node.reduce(scope);
+                    }
+                }
+
+                return new NONE_NODE();
+
+            } else {
+                throw new Error(`Невозможно вызвать несуществующую функцию "${node.toString()}"!`);
+            }
+        } else {
+            throw new Error('Некорректный вызов функции!');
+        }
+    }
+}
+
+class SUBSCRIPT_NODE {
+    constructor(obj, index) {
+        this.obj = obj;
+        this.index = index;
+    }
+
+    reduce(outerScope) {
+
+    }
+}
+
+class PROPERTY_NODE {
+    constructor(obj, name) {
+        this.obj = obj;
+        this.name = name;
+    }
+
+    reduce(outerScope) {
+
+    }
+}
+
+class ARGLIST_NODE {
+    constructor(stmts) {
+        this.stmts = stmts;
+    }
+
+    reduce(outerScope) {
+        return this.stmts.map(
+            stmt => stmt.reduce(outerScope)
+        );
+    }
+}
+
+
 module.exports = {
-    PROGRAM_NODE,
     FUNCTION_NODE,
     IF_NODE,
     WHILE_NODE,
@@ -510,5 +652,9 @@ module.exports = {
     COMPARISON_NODE,
     MOD_BINARY_NODE,
     LIST_EXPR_NODE,
-    NONE_NODE
+    NONE_NODE,
+    FUNCTION_CALL_NODE,
+    SUBSCRIPT_NODE,
+    PROPERTY_NODE,
+    ARGLIST_NODE
 };

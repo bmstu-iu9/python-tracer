@@ -10,3 +10,5 @@ def gcd(x, y):
         x = y
         y = rem
     return x
+
+gcd(-69, -46)

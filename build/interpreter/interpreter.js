@@ -7,6 +7,7 @@ const Listener = require("./PythonListener");
 
 const ASTBuilder = require('./ASTBuilder');
 const ASTNodes = require('./ASTNodes');
+const getReducedTree = require('./Utils').reducer;
 
 const DEBUG = false;
 
@@ -27,43 +28,16 @@ var chars = new antlr4.InputStream(input);
 var lexer = new Lexer.PythonLexer(chars);
 var tokens  = new antlr4.CommonTokenStream(lexer);
 var parser = new Parser.PythonParser(tokens);
-
-parser.buildParseTrees = true;
-var tree = parser.funcdef();
-
 var builder = new ASTBuilder();
 
-var rootNode = builder.getFunction(tree);
+parser.buildParseTrees = true;
 
-//console.log(JSON.stringify(rootNode, null, '  '));
+var program = builder.buildProgram(
+    parser.file_input()
+);
 
-let program = new ASTNodes.PROGRAM_NODE([
-    rootNode
-]);
+console.log(program.execute());
 
-program.execute();
-
-//var extractor = new Listener.PythonListener();
-
-//var treeWalker = antlr4.tree.ParseTreeWalker.DEFAULT;
-//
-// var mainFunction = new Nodes.FUNCTION_NODE('main', [], [], null);
-//
-// treeWalker.walk = function(listener, t, parentNode) {
-//     if (!t.parentNode) {
-//         t.parentNode = parentNode;
-//     }
-//
-//     for (var i = 0; i < t.getChildCount(); i++) {
-//         t.getChild(i).parentNode = t.parentNode;
-//     }
-//
-//     antlr4.tree.ParseTreeWalker.prototype.walk.apply(this, arguments);
-// };
-//
-//treeWalker.walk(extractor, tree);
-//
-// //console.log(tree);
 
 
 

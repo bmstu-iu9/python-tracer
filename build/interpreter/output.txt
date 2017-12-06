@@ -1,9 +1,34 @@
-IDENT CREATED: x
-IDENT CREATED: y
-NUMBER CREATED: 10
-REDUCE ASSIGN:
-LIST_EXPR_NODE { stmts: [ OR_LOGICAL_NODE { stmts: [Array] } ] } ASSIGN_NODE {
-  stmtsLeft: LIST_EXPR_NODE { stmts: [ [Object] ] },
-  stmtsRight: LIST_EXPR_NODE { stmts: [ [Object] ] },
-  scope: undefined }
-[object Object]
+x = -69
+y = -46
+if
+-69 < 0
+x = 69
+if
+-46 < 0
+y = 46
+if
+69 == 0
+while
+46 != 0
+rem = 23
+x = 46
+y = 23
+while
+23 != 0
+rem = 0
+x = 23
+y = 0
+while
+0 != 0
+RETURN REDUCE:
+[ FUNCTION_NODE {
+    name: 'gcd',
+    args: { x: NONE_NODE {}, y: NONE_NODE {} },
+    body: [ [Object], [Object], [Object], [Object], [Object] ],
+    scope: 
+     { putSymbol: [Function],
+       getSymbol: [Function],
+       hasSymbol: [Function],
+       print: [Function],
+       getFunction: [Function] } },
+  { [Number: 23] value: 23 } ]
