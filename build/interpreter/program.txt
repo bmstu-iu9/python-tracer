@@ -1,14 +1,6 @@
-def gcd(x, y):
-    if x < 0:
-        x = -x
-    if y < 0:
-        y = -y
-    if x == 0:
-        return y
-    while y != 0:
-        rem = x % y
-        x = y
-        y = rem
-    return x
+DIGITS = '0123456789ABCDEF'
 
-gcd(-69, -46)
+def hex():
+    return None
+
+hex()

@@ -1,34 +1,10 @@
-x = -69
-y = -46
-if
--69 < 0
-x = 69
-if
--46 < 0
-y = 46
-if
-69 == 0
-while
-46 != 0
-rem = 23
-x = 46
-y = 23
-while
-23 != 0
-rem = 0
-x = 23
-y = 0
-while
-0 != 0
-RETURN REDUCE:
-[ FUNCTION_NODE {
-    name: 'gcd',
-    args: { x: NONE_NODE {}, y: NONE_NODE {} },
-    body: [ [Object], [Object], [Object], [Object], [Object] ],
-    scope: 
-     { putSymbol: [Function],
-       getSymbol: [Function],
-       hasSymbol: [Function],
-       print: [Function],
-       getFunction: [Function] } },
-  { [Number: 23] value: 23 } ]
+IDENT_NODE {
+  name: 'x',
+  scope: 
+   { putSymbol: [Function],
+     getSymbol: [Function],
+     hasSymbol: [Function],
+     print: [Function],
+     getFunction: [Function] } } PLUS_BINARY_NODE {
+  stmts: [ NUMERIC_NODE { val: 10 }, MUL_BINARY_NODE { stmts: [Array] } ] }
+x = 20

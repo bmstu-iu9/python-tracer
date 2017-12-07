@@ -33,9 +33,11 @@ class ASTBuilder {
 
         let args = {};
 
-        ctx.typedargslist().tfpdef().forEach(argctx =>
-            args[argctx.NAME().getText()] = new ASTNodes.NONE_NODE()
-        );
+        if (ctx.typedargslist()) {
+            ctx.typedargslist().tfpdef().forEach(argctx =>
+                args[argctx.NAME().getText()] = new ASTNodes.NONE_NODE()
+            );
+        }
 
         return args;
     }
@@ -237,6 +239,13 @@ class ASTBuilder {
                     this.getFactor(ctx.factor(1))
                 ])
             );
+            case '//': return this.getTermRec(
+                ctx.children.slice(3),
+                new ASTNodes.FLOOR_DIV_BINARY_NODE([
+                    this.getFactor(ctx.factor(0)),
+                    this.getFactor(ctx.factor(1))
+                ])
+            );
         }
     }
 
@@ -267,6 +276,13 @@ class ASTBuilder {
                     this.getFactor(ctx.factor(1))
                 ])
             );
+            case '//': return this.getTermRec(
+                ctx.children.slice(2),
+                new ASTNodes.FLOOR_DIV_BINARY_NODE([
+                    stmt,
+                    this.getFactor(ctx.factor(1))
+                ])
+            );
         }
     }
 
@@ -289,6 +305,8 @@ class ASTBuilder {
         if (ctx.children.length === 1) {
             return this.getAtomExpr(ctx.atom_expr())
         }
+
+
 
         return new ASTNodes.POWER_NODE(
             this.getAtomExpr(ctx.atom_expr()),
@@ -319,7 +337,7 @@ class ASTBuilder {
         if (trailerCtx.children[0].getText() === '(') {
             return new ASTNodes.FUNCTION_CALL_NODE(
                 childNode,
-                trailerCtx.arglist() ? this.getArgList(trailerCtx.arglist()) : null
+                this.getArgList(trailerCtx.arglist())
             )
         } else if (trailerCtx.children[0].getText() === '[') {
             return new ASTNodes.SUBSCRIPT_NODE(
@@ -365,7 +383,7 @@ class ASTBuilder {
 
     getArgList(ctx) {
         return new ASTNodes.ARGLIST_NODE(
-            ctx.argument().map(this.getArgument, this)
+            ctx ? ctx.argument().map(this.getArgument, this) : []
         )
     }
 
@@ -382,14 +400,27 @@ class ASTBuilder {
     }
 
     getAtom(ctx) {
+
+        let cyrSymbol = ctx.children[0].getText();
+
         if (ctx.NAME()) {
             return new ASTNodes.IDENT_NODE(ctx.NAME().getText());
         } else if (ctx.NUMBER()) {
             return new ASTNodes.NUMERIC_NODE(ctx.NUMBER().getText());
-        } else if (ctx.STRING()) {
+        } else if (['True', 'False'].indexOf(cyrSymbol) !== -1) {
+            return new ASTNodes.BOOLEAN_NODE(cyrSymbol === 'True')
+        }  else if (cyrSymbol === 'None') {
+            return new ASTNodes.NONE_NODE();
+        } else if (ctx.STRING(0)) {
             return new ASTNodes.STRING_NODE(ctx.STRING(0).getText());
-        } else if (['True', 'False'].indexOf(ctx.children[0].getText()) !== -1) {
-            return new ASTNodes.BOOLEAN_NODE(ctx.children[0].getText() === 'True')
+        } else if (cyrSymbol === '(' && ctx.testlist_comp()) {
+            return this.getTestListComp(ctx.testlist_comp());
+        }
+    }
+
+    getTestListComp(ctx) {
+        if (ctx.test()) {
+            return this.getTest(ctx.test(0));
         }
     }
 

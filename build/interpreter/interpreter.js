@@ -7,7 +7,6 @@ const Listener = require("./PythonListener");
 
 const ASTBuilder = require('./ASTBuilder');
 const ASTNodes = require('./ASTNodes');
-const getReducedTree = require('./Utils').reducer;
 
 const DEBUG = false;
 
@@ -36,7 +35,9 @@ var program = builder.buildProgram(
     parser.file_input()
 );
 
-console.log(program.execute());
+//console.log(program.body[1]);
+
+program.execute();
 
 
 
