@@ -1,7 +1,6 @@
 module.exports = function(outerScope, owner) {
 
     var localSymbolTable = {};
-    var ownerFunction = owner;
 
     this.putSymbol = function(key, value) {
 
@@ -28,9 +27,5 @@ module.exports = function(outerScope, owner) {
 
     this.print = function() {
         console.log(JSON.stringify(localSymbolTable, null, ' '));
-    };
-
-    this.getFunction = function () {
-        return ownerFunction || outerScope.getFunction();
     };
 };

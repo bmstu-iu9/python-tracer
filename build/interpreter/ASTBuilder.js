@@ -18,6 +18,10 @@ class ASTBuilder {
             )
         };
 
+        program.include = function(name, functionNode) {
+            program.scope.putSymbol(name, functionNode);
+        };
+
         return program;
     }
 
@@ -35,7 +39,9 @@ class ASTBuilder {
 
         if (ctx.typedargslist()) {
             ctx.typedargslist().tfpdef().forEach(argctx =>
-                args[argctx.NAME().getText()] = new ASTNodes.NONE_NODE()
+                args[argctx.NAME().getText()] = new ASTNodes.UNDEFINED_NODE(
+                    argctx.NAME().getText()
+                )
             );
         }
 
@@ -254,33 +260,33 @@ class ASTBuilder {
             return stmt;
         }
 
-        switch (ctx.children[0].getText()) {
+        switch (children[0].getText()) {
             case '*': return this.getTermRec(
-                ctx.children.slice(2),
+                children.slice(2),
                 new ASTNodes.MUL_BINARY_NODE([
                     stmt,
-                    this.getFactor(ctx.factor(1))
+                    this.getFactor(children[1])
                 ])
             );
             case '/': return this.getTermRec(
-                ctx.children.slice(2),
+                children.slice(2),
                 new ASTNodes.DIV_BINARY_NODE([
                     stmt,
-                    this.getFactor(ctx.factor(1))
+                    this.getFactor(children[1])
                 ])
             );
             case '%': return this.getTermRec(
-                ctx.children.slice(2),
+                children.slice(2),
                 new ASTNodes.MOD_BINARY_NODE([
                     stmt,
-                    this.getFactor(ctx.factor(1))
+                    this.getFactor(children[1])
                 ])
             );
             case '//': return this.getTermRec(
-                ctx.children.slice(2),
+                children.slice(2),
                 new ASTNodes.FLOOR_DIV_BINARY_NODE([
                     stmt,
-                    this.getFactor(ctx.factor(1))
+                    this.getFactor(children[1])
                 ])
             );
         }
@@ -340,10 +346,23 @@ class ASTBuilder {
                 this.getArgList(trailerCtx.arglist())
             )
         } else if (trailerCtx.children[0].getText() === '[') {
-            return new ASTNodes.SUBSCRIPT_NODE(
-                childNode,
-                this.getSubscriptList(trailerCtx.subscriptlist())
-            )
+
+            let subscriptList = this.getSubscriptList(trailerCtx.subscriptlist());
+
+            if (subscriptList.slice) {
+                return new ASTNodes.SLICE_NODE(
+                    childNode,
+                    subscriptList.start,
+                    subscriptList.end,
+                    subscriptList.step
+                );
+            } else {
+                return new ASTNodes.ELEM_NODE(
+                    childNode,
+                    subscriptList.start
+                )
+            }
+
         } else if (trailerCtx.NAME()) {
             return new ASTNodes.PROPERTY_NODE(
                 childNode,
@@ -368,10 +387,15 @@ class ASTBuilder {
                     this.getArgList(trailerCtx.arglist())
                 )
             } else if (trailerCtx.children[0].getText() === '[') {
+
+                let subscriptList = this.getSubscriptList(trailerCtx.subscriptlist());
+
                 return new ASTNodes.SUBSCRIPT_NODE(
                     childNode,
-                    this.getSubscriptList(trailerCtx.subscriptlist())
-                )
+                    subscriptList.start || null,
+                    subscriptList.end || null,
+                    subscriptList.step || null
+                );
             } else if (trailerCtx.NAME()) {
                 return new ASTNodes.PROPERTY_NODE(
                     childNode,
@@ -396,7 +420,37 @@ class ASTBuilder {
     }
 
     getSubscript(ctx) {
-        return this.getTest(ctx.test(0));
+        if (ctx.test(0) && ctx.children.length === 1) {
+            return {
+                slice: false,
+                start: this.getTest(ctx.test(0)),
+                end: null,
+                step: null
+            };
+        }
+
+        let start = null,
+            end = null;
+
+        if (ctx.children[0].getText() !== ':') {
+            start = this.getTest(ctx.test(0));
+            end = ctx.test(1) ? this.getTest(ctx.test(1)) : null;
+        } else {
+            if (ctx.test(0) && ctx.children[1].getText() !== ':') {
+                end = this.getTest(ctx.test(0))
+            }
+        }
+
+        return {
+            slice: true,
+            start: start,
+            end: end,
+            step: ctx.sliceop(0) ? this.getSliceOp(ctx.sliceop(0)) : null
+        };
+    }
+
+    getSliceOp(ctx) {
+        return ctx.test(0) ? this.getTest(ctx.test(0)) : null;
     }
 
     getAtom(ctx) {
@@ -415,13 +469,19 @@ class ASTBuilder {
             return new ASTNodes.STRING_NODE(ctx.STRING(0).getText());
         } else if (cyrSymbol === '(' && ctx.testlist_comp()) {
             return this.getTestListComp(ctx.testlist_comp());
+        } else if (cyrSymbol === '[') {
+            return new ASTNodes.ARRAY_LIST_NODE(
+                ctx.testlist_comp() ? this.getTestListComp(ctx.testlist_comp()): []
+            );
         }
     }
 
     getTestListComp(ctx) {
-        if (ctx.test()) {
+        if (ctx.test().length === 1) {
             return this.getTest(ctx.test(0));
         }
+
+        return ctx.test().map(this.getTest, this);
     }
 
     getCompoundStmt(ctx) {
