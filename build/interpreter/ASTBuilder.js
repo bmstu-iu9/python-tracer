@@ -7,6 +7,7 @@ class ASTBuilder {
 
     buildProgram(ctx, args) {
         let program = new ASTNodes.FUNCTION_NODE(
+            ctx,
             '__main__',
             args || {},
             ctx.stmt().map(this.getStmt, this)
@@ -27,6 +28,7 @@ class ASTBuilder {
 
     getFuncDef(ctx) {
         return new ASTNodes.FUNCTION_NODE(
+            ctx,
             ctx.NAME().getText(),
             this.getParameters(ctx.parameters()),
             this.getSuite(ctx.suite())
@@ -93,6 +95,7 @@ class ASTBuilder {
 
         if (ctx.children[1].getText() === '=') {
             return new ASTNodes.ASSIGN_NODE(
+                ctx,
                 this.getTestListStarExpr(ctx.testlist_star_expr(0)),
                 this.getExprStmtRec(ctx.children.slice(2))
             )
@@ -105,6 +108,7 @@ class ASTBuilder {
         }
 
         return new ASTNodes.ASSIGN_NODE(
+            children[0],
             this.getTestListStarExpr(children[0]),
             this.getExprStmtRec(children.slice(2))
         )
@@ -132,6 +136,7 @@ class ASTBuilder {
 
     getReturnStmt(ctx) {
         return new ASTNodes.RETURN_NODE(
+            ctx,
             ctx.testlist() ?
                 ctx.testlist().test()
                     .map(this.getTest, this) : null
@@ -502,23 +507,28 @@ class ASTBuilder {
 
         ifBlocks.push({
             condition: this.getTest(ctx.test(0)),
-            stmt: this.getSuite(ctx.suite(0))
+            stmt: this.getSuite(ctx.suite(0)),
+            ctx: ctx.test(0)
         });
 
         while (children.length && children[0].getText() === 'elif') {
             ifBlocks.push({
                 condition: this.getTest(children[1]),
-                stmt: this.getSuite(children[3])
+                stmt: this.getSuite(children[3]),
+                ctx: children[1]
             });
 
             children = children.slice(4);
         }
 
         if (children.length) {
-            elseBlock = this.getSuite(children[2]);
+            elseBlock = {
+                stmt: this.getSuite(children[2]),
+                ctx: children[0]
+            };
         }
 
-        return new ASTNodes.IF_NODE(ifBlocks, elseBlock);
+        return new ASTNodes.IF_NODE(ctx, ifBlocks, elseBlock);
     }
 
     getTest(ctx) {
@@ -570,6 +580,7 @@ class ASTBuilder {
 
     getWhileStmt(ctx) {
         return new ASTNodes.WHILE_NODE(
+            ctx,
             this.getTest(ctx.test(0)),
             this.getSuite(ctx.suite(0))
         )

@@ -4,6 +4,10 @@ class NODE {
     text() {
         return this._text;
     }
+
+    line() {
+        return this.ctx.start.line;
+    }
 }
 
 class CONTROL_FLOW_NODE extends NODE {
@@ -307,10 +311,11 @@ class NONE_NODE extends TYPE_NODE {
 }
 
 class FUNCTION_NODE extends TYPE_NODE {
-    constructor(name, args, body, external = null) {
+    constructor(ctx, name, args, body, external = null) {
 
         super();
 
+        this.ctx = ctx;
         this.name = name;
         this.args = args || {};
         this.body = body || [];
@@ -353,57 +358,58 @@ class FUNCTION_NODE extends TYPE_NODE {
 
 
 class IF_NODE extends CONTROL_FLOW_NODE {
-    constructor(ifBlocks, elseStmt) {
+    constructor(ctx, ifBlocks, elseBlock) {
 
         super();
 
+        this.ctx = ctx;
         this.ifBlocks = ifBlocks;
-        this.elseStmt = elseStmt;
+        this.elseBlock = elseBlock;
     }
 
     reduce(outerScope) {
-
-
         for (let i = 0; i < this.ifBlocks.length; i++) {
 
-            console.log(this.ifBlocks[i].condition.reduce(outerScope).text());
-            let cond = new BOOLEAN_NODE(this.ifBlocks[i].condition.reduce(outerScope).value());
+            let cond = this.ifBlocks[i].condition.reduce(outerScope),
+                flag = new BOOLEAN_NODE(cond.value());
 
             if (i == 0) {
-                this._text = `if ${cond.text()}:`;
+                this._text = `${this.ifBlocks[i].ctx.start.line}. if ${cond.text()}:`;
             } else {
-                this._text += '\n' + `elif ${cond.text()}:`;
+                this._text += '\n' + `${this.ifBlocks[i].ctx.start.line}. elif ${cond.text()}:`;
             }
 
-            if (cond.val) {
-                console.log('----------');
-                console.log(this.ifBlocks[i].stmt);
+            if (flag.val) {
                 return this.ifBlocks[i].stmt;
             }
         }
 
-        this._text = '\n' + `else:`;
+        if (this.elseBlock) {
+            this._text += '\n' + `${this.elseBlock.ctx.symbol.line}. else:`;
+            return this.elseBlock.stmt || [];
+        }
 
-        return this.elseStmt || [];
+        return [];
     }
 }
 
 class WHILE_NODE extends CONTROL_FLOW_NODE {
-    constructor(condition, stmts) {
+    constructor(ctx, condition, stmts) {
 
         super();
 
+        this.ctx = ctx;
         this.condition = condition;
         this.stmts = stmts;
     }
 
     reduce(outerScope) {
+        let cond = this.condition.reduce(outerScope),
+            flag = new BOOLEAN_NODE(cond.value());
 
-        let cond = new BOOLEAN_NODE(this.condition.reduce(outerScope).value());
+        this._text = `${this.line()}. while ${cond.text()}:`;
 
-        this._text = `while ${cond.text()}:`;
-
-        if (cond.val) {
+        if (flag.val) {
             return this.stmts.concat(this);
         }
 
@@ -412,14 +418,13 @@ class WHILE_NODE extends CONTROL_FLOW_NODE {
 }
 
 class ASSIGN_NODE extends NODE {
-    constructor(listLeft, listRight) {
+    constructor(ctx, listLeft, listRight) {
 
         super();
 
+        this.ctx = ctx;
         this.listLeft = listLeft;
         this.listRight = listRight;
-
-        this._text = "ASSIGN_NODE"
     }
 
     reduce(outerScope) {
@@ -436,7 +441,7 @@ class ASSIGN_NODE extends NODE {
                 res = right[i].value();
                 outerScope.putSymbol(stmt.name, res);
 
-                this._text = `${stmt.name} = ${res.text()}`;
+                this._text = `${this.line()}. ${stmt.name} = ${res.text()}`;
             }
         });
 
@@ -521,10 +526,11 @@ class NOT_LOGICAL_NODE extends NODE {
 }
 
 class RETURN_NODE extends CONTROL_FLOW_NODE {
-    constructor(stmts) {
+    constructor(ctx, stmts) {
 
         super();
 
+        this.ctx = ctx;
         this.stmts = stmts;
     }
 
@@ -532,7 +538,7 @@ class RETURN_NODE extends CONTROL_FLOW_NODE {
         let len = this.stmts.length,
             res = len ? this.stmts[len - 1].reduce(outerScope).value() : new NONE_NODE();
 
-        this._text = `return ${res.text()}`;
+        this._text = `${this.line()}. return ${res.text()}`;
 
         return res;
     }
@@ -811,23 +817,16 @@ class COMPARISON_NODE extends NODE {
     }
 
     reduce(outerScope) {
-
-        // console.log('LEFT:\n');
-        // console.log(this.stmtLeft);
-        // console.log('LEFT RED:\n');
-        // console.log(this.stmtLeft.reduce(outerScope));
-        // console.log('RIGHT:\n');
-        // console.log(this.stmtRight);
-        // console.log('RIGHT RED:\n');
-        // console.log(this.stmtRight.reduce(outerScope) instanceof NUMERIC_NODE);
-
         let left = this.stmtLeft.reduce(outerScope).value(),
             right = this.stmtRight ? this.stmtRight.reduce(outerScope).value() : null;
 
-        console.log(`${left.text()} ${this.op} ${right.text()}`);
+        //console.log(`${left.text()} ${this.op} ${right.text()}`);
         if (right === null) {
+            this._text = left.text();
             return left;
         }
+
+        this._text = `${left.text()} ${this.op} ${right.text()}`;
 
         switch (this.op) {
             case '<': return new BOOLEAN_NODE(left.val < right.val);
@@ -880,16 +879,21 @@ class FUNCTION_CALL_NODE extends NODE {
                 }
             );
 
+            this._text = '';
+
+            if (functionNode.ctx) {
+                this._text = functionNode.line() + '. ';
+            }
+
             if (functionNode.external) {
 
-                this._text = `${functionNode.name}(${Object.keys(argsMap).map(
+                this._text += `${functionNode.name}(${Object.keys(argsMap).map(
                         name => argsMap[name]
                 ).join(', ')})`;
 
                 return (functionNode.external(args.map(arg => arg.value()), scope) || (new NONE_NODE()));
             } else {
-
-                this._text = `def ${functionNode.name}(${Object.keys(argsMap).map(
+                this._text += `def ${functionNode.name}(${Object.keys(argsMap).map(
                         name => `${name} = ${argsMap[name]}`
                 ).join(', ')})`;
 
@@ -902,11 +906,9 @@ class FUNCTION_CALL_NODE extends NODE {
 
                     let res = node.reduce(scope);
 
-                    //console.log('CURRENT NODE:');
-                    //console.log('\n', res, '\n');
+                    //console.log(node.text());
 
                     if (node instanceof CONTROL_FLOW_NODE) {
-
                         this._text += '\n' + node.text();
 
                         if (node instanceof RETURN_NODE) {

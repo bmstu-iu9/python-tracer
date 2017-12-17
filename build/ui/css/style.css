@@ -1,0 +1,78 @@
+body {
+  background: #252830;
+  margin: 0;
+  padding: 0;
+  color: white;
+  font-family: "Source Code Pro", sans-serif;
+}
+.tracer {
+  height: 100%;
+  padding: 15px;
+}
+.tracer__header {
+  padding: 15px;
+  border-bottom: 1px solid #868e96;
+}
+.tracer__header .header__logo {
+  display: inline-block;
+  font-weight: bold;
+  font-size: 24px;
+}
+.tracer__header .header__block {
+  display: inline-block;
+  margin-right: 10px;
+}
+.tracer__header .header__block .block__label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+.tracer__content .content__top {
+  padding: 15px;
+  border-bottom: 1px solid #868e96;
+}
+.tracer__content .content__top .top__icon {
+  padding: 15px;
+  text-align: center;
+}
+.tracer__content .content__top .top__icon--inner {
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 25px;
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  padding: 20px;
+  border-radius: 50px;
+  border: 7px solid #1bc98e;
+}
+.tracer__content .content__top .top__icon--blue > div {
+  border-color: #1ca8dd;
+}
+.tracer__content .content__top .top__icon--green > div {
+  border-color: #1bc98e;
+}
+.tracer__content .content__top .top__icon--red > div {
+  border-color: #e64759;
+}
+.tracer__content .content__input {
+  width: 100%;
+  background: #1e2127;
+  color: white;
+  height: 30rem;
+  border-radius: 5px;
+  padding: 15px;
+  resize: none;
+  border: none;
+  outline: none;
+}
+.tracer__content .content__left {
+  padding: 15px;
+  border-right: 1px solid #868e96;
+}
+.tracer__content .content__right {
+  padding: 15px;
+}
+.tracer__footer {
+  border-top: 1px solid #868e96;
+  padding: 15px;
+}

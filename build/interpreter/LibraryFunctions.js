@@ -5,7 +5,7 @@ const Scope = require('./Scope');
 function createFunction(name, argv, handler) {
     let args = {};
     argv.forEach(argName => args[argName] = new ASTNodes.UNDEFINED_NODE(argName));
-    return new ASTNodes.FUNCTION_NODE(name, args, [], handler);
+    return new ASTNodes.FUNCTION_NODE(null, name, args, [], handler);
 }
 
 module.exports.len = createFunction('len', ['arr'], function(args, scope) {

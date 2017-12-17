@@ -1,10 +1,84 @@
 <html>
 <head>
-  <title>Интерактивный тренажёр по Python</title>
+    <title>Интерактивный тренажёр по Python</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+          integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="build/ui/css/style.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+            integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+            integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+            crossorigin="anonymous"></script>
+    <script src="build/ui/js/codemirror.js"></script>
+    <script src="build/ui/js/python.js"></script>
+    <link rel="stylesheet" href="build/ui/css/codemirror.css">
+    <link rel="stylesheet" href="build/ui/css/dracula.css">
 </head>
 <body>
-<p>
-Здесь будет работать интерактивный тренажёр по&nbsp;пониманию программ на&nbsp;Python.
-</p>
+<div class="tracer container">
+    <div class="tracer__header row align-items-center justify-content-between">
+        <div class="header__logo col">
+            PyTracer
+        </div>
+        <div class="header__user col">
+            <div class="header__block">
+                <span class="block__label">ФИО:</span>
+                <span class="block__text">Головань С.М.</span>
+            </div>
+            <div class="header__block">
+                <span class="block__label">Группа:</span>
+                <span class="block__text">ИУ9-72</span>
+            </div>
+        </div>
+    </div>
+    <div class="tracer__content">
+        <div class="content__top row justify-content-center">
+            <div class="top__icon top__icon--green col">
+                <div class="top__icon--inner">1</div>
+            </div>
+            <div class="top__icon top__icon--green col">
+                <div class="top__icon--inner">2</div>
+            </div>
+            <div class="top__icon top__icon--green col">
+                <div class="top__icon--inner">3</div>
+            </div>
+            <div class="top__icon top__icon--red col">
+                <div class="top__icon--inner">4</div>
+            </div>
+            <div class="top__icon top__icon--green col">
+                <div class="top__icon--inner">5</div>
+            </div>
+            <div class="top__icon top__icon--blue col">
+                <div class="top__icon--inner">6</div>
+            </div>
+            <div class="top__icon top__icon--blue col">
+                <div class="top__icon--inner">7</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="content__left col">
+                <textarea id="task" class="content__input"></textarea>
+            </div>
+            <div class="content__right col">
+                <textarea class="content__input"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="tracer__footer row">
+        <div class="col">footer</div>
+    </div>
+</div>
+<script>
+    CodeMirror.fromTextArea(document.getElementById("task"), {
+        lineNumbers: true,
+        mode: 'text/x-python',
+        theme: 'dracula'
+    });
+</script>
 </body>
 </html>

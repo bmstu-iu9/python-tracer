@@ -1,3 +1,20 @@
-x = [1, 2, 3]
+def hex(digit):
+    if digit <= 9:
+        digit = str(digit)
+    elif digit <= 13:
+        if digit <= 11:
+            if digit == 10:
+                digit = 'A'
+            else:
+                digit = 'B'
+        elif digit == 12:
+            digit = 'C'
+        else:
+            digit = 'D'
+    elif digit == 14:
+        digit = 'E'
+    else:
+        digit = 'F'
+    return digit
 
-x = x[1:]
+res = hex(15)
