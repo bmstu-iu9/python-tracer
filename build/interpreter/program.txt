@@ -1,3 +1,54 @@
+def gcd(x, y):
+    if x < 0:
+        x = -x
+    if y < 0:
+        y = -y
+    while y != 0:
+        rem = x % y
+        x = y
+        y = rem
+    return x
+
+def factorize(n):
+    res = ''
+    while n > 2 and n % 2 == 0:
+        res = res + '2*'
+        n = n // 2
+    d = 3
+    while n > d:
+        if n % d == 0:
+            res = res + str(d) + '*'
+            n = n // d
+        else:
+            d = d + 2
+    return res + str(n)
+
+def hex(number):
+    if number == 0:
+        return '0'
+    res = ''
+    while number > 0:
+        digit = number % 16
+        if digit <= 9:
+            digit = str(digit)
+        elif digit <= 13:
+            if digit <= 11:
+                if digit == 10:
+                    digit = 'A'
+                else:
+                    digit = 'B'
+            elif digit == 12:
+                digit = 'C'
+            else:
+                digit = 'D'
+        elif digit == 14:
+            digit = 'E'
+        else:
+            digit = 'F'
+        res = digit + res
+        number = number // 16
+    return res
+
 def unique(items):
     res = []
     i = 0
@@ -35,4 +86,4 @@ def join(sep, items):
             items = items[1:]
     return res
 
-res = join(':', [75, 29, 55, 73])
+res = hex(212)

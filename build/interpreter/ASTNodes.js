@@ -1,10 +1,16 @@
 var Scope = require('./Scope');
 
-class CONTROL_FLOW_NODE {
+class NODE {
+    text() {
+        return this._text;
+    }
+}
+
+class CONTROL_FLOW_NODE extends NODE {
 
 }
 
-class TYPE_NODE {
+class TYPE_NODE extends NODE {
 
 }
 
@@ -34,7 +40,7 @@ class UNDEFINED_NODE extends TYPE_NODE {
         throw new Error(`Обращение к несуществующей переменной "${this.name}"`)
     }
 
-    toString() {
+    text() {
         throw new Error(`Обращение к несуществующей переменной "${this.name}"`)
     }
 
@@ -62,8 +68,8 @@ class IDENT_NODE extends TYPE_NODE {
         return this;
     }
 
-    toString() {
-        return this.value().toString();
+    text() {
+        return this.value().text();
     }
 
     value() {
@@ -130,7 +136,7 @@ class NUMERIC_NODE extends TYPE_NODE {
         return this;
     }
 
-    toString() {
+    text() {
         return this.val;
     }
 
@@ -220,7 +226,7 @@ class STRING_NODE extends ITERABLE {
         return this
     }
 
-    toString() {
+    text() {
         return `'${this.val}'`;
     }
 }
@@ -267,7 +273,7 @@ class BOOLEAN_NODE extends TYPE_NODE {
         return this;
     }
 
-    toString() {
+    text() {
         return this.val ? 'True' : 'False';
     }
 }
@@ -295,7 +301,7 @@ class NONE_NODE extends TYPE_NODE {
         return this;
     }
 
-    toString() {
+    text() {
         return 'None';
     }
 }
@@ -347,28 +353,38 @@ class FUNCTION_NODE extends TYPE_NODE {
 
 
 class IF_NODE extends CONTROL_FLOW_NODE {
-    constructor(condition, ifStmt, elseStmt) {
+    constructor(ifBlocks, elseStmt) {
 
         super();
 
-        this.condition = condition;
-        this.ifStmt = ifStmt;
+        this.ifBlocks = ifBlocks;
         this.elseStmt = elseStmt;
     }
 
     reduce(outerScope) {
 
-        console.log('if');
 
-        var cond = new BOOLEAN_NODE(this.condition.reduce(outerScope).value());
+        for (let i = 0; i < this.ifBlocks.length; i++) {
 
-        if (cond.val) {
-            return this.ifStmt;
-        } else if (this.elseStmt) {
-            return this.elseStmt;
-        } else {
-            return []
+            console.log(this.ifBlocks[i].condition.reduce(outerScope).text());
+            let cond = new BOOLEAN_NODE(this.ifBlocks[i].condition.reduce(outerScope).value());
+
+            if (i == 0) {
+                this._text = `if ${cond.text()}:`;
+            } else {
+                this._text += '\n' + `elif ${cond.text()}:`;
+            }
+
+            if (cond.val) {
+                console.log('----------');
+                console.log(this.ifBlocks[i].stmt);
+                return this.ifBlocks[i].stmt;
+            }
         }
+
+        this._text = '\n' + `else:`;
+
+        return this.elseStmt || [];
     }
 }
 
@@ -383,9 +399,9 @@ class WHILE_NODE extends CONTROL_FLOW_NODE {
 
     reduce(outerScope) {
 
-        console.log('while');
-
         let cond = new BOOLEAN_NODE(this.condition.reduce(outerScope).value());
+
+        this._text = `while ${cond.text()}:`;
 
         if (cond.val) {
             return this.stmts.concat(this);
@@ -395,10 +411,15 @@ class WHILE_NODE extends CONTROL_FLOW_NODE {
     }
 }
 
-class ASSIGN_NODE {
+class ASSIGN_NODE extends NODE {
     constructor(listLeft, listRight) {
+
+        super();
+
         this.listLeft = listLeft;
         this.listRight = listRight;
+
+        this._text = "ASSIGN_NODE"
     }
 
     reduce(outerScope) {
@@ -412,74 +433,90 @@ class ASSIGN_NODE {
 
         left.forEach((stmt, i) => {
             if ((stmt instanceof IDENT_NODE) && right[i]) {
-
-                console.log(right[i]);
-
                 res = right[i].value();
-                console.log(`${stmt.name} = ${res}`);
                 outerScope.putSymbol(stmt.name, res);
+
+                this._text = `${stmt.name} = ${res.text()}`;
             }
         });
 
         return res;
     }
+
+
 }
 
-class OR_LOGICAL_NODE {
+class OR_LOGICAL_NODE extends NODE {
     constructor(stmts) {
+        super();
+
         this.stmts = stmts;
     }
 
     reduce(outerScope) {
-        console.log('REDUCE LOGICAL OR:');
+        //console.log('REDUCE LOGICAL OR:');
 
         let result = new NONE_NODE();
+        let strings = [];
 
         for (let i = 0; i < this.stmts.length; i++) {
 
             result = this.stmts[i].reduce(outerScope).value();
 
-            console.log('res = ' + result.val);
+            strings.push(result.text());
 
             if (new BOOLEAN_NODE(result).val) {
+                this._text = strings.join(' or ');
                 return result;
             }
         }
 
+        this._text = strings.join(' or ');
         return result;
     }
 }
 
-class AND_LOGICAL_NODE {
+class AND_LOGICAL_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
     reduce(outerScope) {
-        console.log('REDUCE LOGICAL AND:');
+        //console.log('REDUCE LOGICAL AND:');
 
         let result = new NONE_NODE();
+        let strings = [];
 
         for (let i = 0; i < this.stmts.length; i++) {
 
             result = this.stmts[i].reduce(outerScope).value();
+            strings.push(result.text());
 
             if (!(new BOOLEAN_NODE(result).val)) {
+                this._text = strings.join(' and ');
                 return result;
             }
         }
 
+        this._text = strings.join(' and ');
         return result;
     }
 }
 
-class NOT_LOGICAL_NODE {
+class NOT_LOGICAL_NODE extends NODE {
     constructor(stmt) {
+        super();
         this.stmt = stmt;
     }
 
     reduce(outerScope) {
-        return new BOOLEAN_NODE(!this.stmt.reduce(outerScope).value().val);
+
+        let result =  new BOOLEAN_NODE(!this.stmt.reduce(outerScope).value().val);
+
+        this._text = result.text();
+
+        return result;
     }
 }
 
@@ -495,45 +532,64 @@ class RETURN_NODE extends CONTROL_FLOW_NODE {
         let len = this.stmts.length,
             res = len ? this.stmts[len - 1].reduce(outerScope).value() : new NONE_NODE();
 
-        console.log(`return ${res.val}`);
+        this._text = `return ${res.text()}`;
+
         return res;
     }
 }
 
-class OR_BIT_NODE {
+class OR_BIT_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
     reduce(outerScope) {
         let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let strings = [res.text()];
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res = new NUMERIC_NODE(res.val | this.stmts[i].reduce(outerScope).value().val);
+
+            let right = this.stmts[i].reduce(outerScope).value();
+
+            strings.push(right.text());
+
+            res = new NUMERIC_NODE(res.val | right.val);
         }
+
+        this._text = strings.join(' | ');
 
         return res;
     }
 }
 
-class AND_BIT_NODE {
+class AND_BIT_NODE extends NODE {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
     reduce(outerScope) {
         let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let strings = [res.text()];
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res = new NUMERIC_NODE(res.val & this.stmts[i].reduce(outerScope).value().val);
+
+            let right = this.stmts[i].reduce(outerScope).value();
+
+            strings.push(right.text());
+
+            res = new NUMERIC_NODE(res.val & right.val);
         }
 
+        this._text = strings.join(' | ');
         return res;
     }
 }
 
-class XOR_BIT_NODE {
+class XOR_BIT_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
@@ -548,8 +604,11 @@ class XOR_BIT_NODE {
     }
 }
 
-class SHIFT_BIT_NODE {
+class SHIFT_BIT_NODE extends NODE  {
     constructor(op, stmtLeft, stmtRight) {
+
+        super();
+
         this.op = op;
         this.stmtLeft = stmtLeft;
         this.stmtRight = stmtRight;
@@ -567,16 +626,16 @@ class SHIFT_BIT_NODE {
     }
 }
 
-class PLUS_BINARY_NODE {
+class PLUS_BINARY_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
     reduce(outerScope) {
 
-        console.log(this.stmts[0]);
-
         let res = this.stmts[0].reduce(outerScope).value(),
+            strings = [res.text()],
             Type = NUMERIC_NODE;
 
         if (res instanceof STRING_NODE) {
@@ -598,14 +657,19 @@ class PLUS_BINARY_NODE {
                     res.val = res.items;
                 }
             }
+
+            strings.push(res.text())
         }
+
+        this._text = strings.join(' + ');
 
         return res;
     }
 }
 
-class MINUS_BINARY_NODE {
+class MINUS_BINARY_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
@@ -620,8 +684,9 @@ class MINUS_BINARY_NODE {
     }
 }
 
-class MUL_BINARY_NODE {
+class MUL_BINARY_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
@@ -636,8 +701,9 @@ class MUL_BINARY_NODE {
     }
 }
 
-class DIV_BINARY_NODE {
+class DIV_BINARY_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
@@ -652,8 +718,9 @@ class DIV_BINARY_NODE {
     }
 }
 
-class FLOOR_DIV_BINARY_NODE {
+class FLOOR_DIV_BINARY_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
@@ -668,8 +735,9 @@ class FLOOR_DIV_BINARY_NODE {
     }
 }
 
-class MOD_BINARY_NODE {
+class MOD_BINARY_NODE extends NODE  {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
@@ -684,8 +752,9 @@ class MOD_BINARY_NODE {
     }
 }
 
-class PLUS_UNARY_NODE {
+class PLUS_UNARY_NODE extends NODE {
     constructor(stmt) {
+        super();
         this.stmt = stmt;
     }
 
@@ -694,8 +763,9 @@ class PLUS_UNARY_NODE {
     }
 }
 
-class MINUS_UNARY_NODE {
+class MINUS_UNARY_NODE extends NODE {
     constructor(stmt) {
+        super();
         this.stmt = stmt;
     }
 
@@ -704,8 +774,9 @@ class MINUS_UNARY_NODE {
     }
 }
 
-class NOT_BIT_NODE {
+class NOT_BIT_NODE extends NODE {
     constructor(stmt) {
+        super();
         this.stmt = stmt;
     }
 
@@ -714,8 +785,9 @@ class NOT_BIT_NODE {
     }
 }
 
-class POWER_NODE {
+class POWER_NODE extends NODE {
     constructor(stmtLeft, stmtRight) {
+        super();
         this.stmtLeft = stmtLeft;
         this.stmtRight = stmtRight;
     }
@@ -730,8 +802,9 @@ class POWER_NODE {
     }
 }
 
-class COMPARISON_NODE {
+class COMPARISON_NODE extends NODE {
     constructor(op, stmtLeft, stmtRight) {
+        super();
         this.op = op;
         this.stmtLeft = stmtLeft;
         this.stmtRight = stmtRight;
@@ -751,7 +824,7 @@ class COMPARISON_NODE {
         let left = this.stmtLeft.reduce(outerScope).value(),
             right = this.stmtRight ? this.stmtRight.reduce(outerScope).value() : null;
 
-        console.log(`${left.val} ${this.op} ${right.val}`);
+        console.log(`${left.text()} ${this.op} ${right.text()}`);
         if (right === null) {
             return left;
         }
@@ -768,8 +841,9 @@ class COMPARISON_NODE {
     }
 }
 
-class LIST_EXPR_NODE {
+class LIST_EXPR_NODE extends NODE {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 
@@ -778,8 +852,9 @@ class LIST_EXPR_NODE {
     }
 }
 
-class FUNCTION_CALL_NODE {
+class FUNCTION_CALL_NODE extends NODE {
     constructor(ident, arglist) {
+        super();
 
         this.ident = ident;
         this.arglist = arglist;
@@ -791,13 +866,14 @@ class FUNCTION_CALL_NODE {
         if (functionNode instanceof FUNCTION_NODE && functionNode) {
 
             let scope = new Scope(outerScope, functionNode),
-                args = this.arglist.reduce(outerScope);
+                args = this.arglist.reduce(outerScope),
+                argsMap = {};
 
             Object.keys(functionNode.args).forEach(
                 (argName, index) => {
                     let symbol = args[index] || (new UNDEFINED_NODE(argName));
 
-                    //console.log('PUT: ', argName, symbol.value());
+                    argsMap[argName] = symbol.text();
 
                     scope.putSymbol(argName, symbol.value());
 
@@ -805,8 +881,18 @@ class FUNCTION_CALL_NODE {
             );
 
             if (functionNode.external) {
+
+                this._text = `${functionNode.name}(${Object.keys(argsMap).map(
+                        name => argsMap[name]
+                ).join(', ')})`;
+
                 return (functionNode.external(args.map(arg => arg.value()), scope) || (new NONE_NODE()));
             } else {
+
+                this._text = `def ${functionNode.name}(${Object.keys(argsMap).map(
+                        name => `${name} = ${argsMap[name]}`
+                ).join(', ')})`;
+
                 let queue = functionNode.body.slice(),
                     node = null;
 
@@ -814,20 +900,27 @@ class FUNCTION_CALL_NODE {
 
                     node = queue.shift();
 
-                    console.log('*****');
-                    console.log(node);
-                    console.log('-----');
+                    let res = node.reduce(scope);
+
+                    //console.log('CURRENT NODE:');
+                    //console.log('\n', res, '\n');
 
                     if (node instanceof CONTROL_FLOW_NODE) {
+
+                        this._text += '\n' + node.text();
+
                         if (node instanceof RETURN_NODE) {
-                            return node.reduce(scope);
+                            console.log(this._text);
+                            return res;
                         } else {
-                            queue.unshift(...node.reduce(scope));
+                            queue.unshift(...res);
                         }
                     } else {
-                        node.reduce(scope);
+                        this._text += '\n' + node.text();
                     }
                 }
+
+                console.log(this._text);
 
                 return new NONE_NODE();
             }
@@ -838,8 +931,9 @@ class FUNCTION_CALL_NODE {
     }
 }
 
-class ELEM_NODE {
+class ELEM_NODE extends NODE  {
     constructor(obj, index) {
+        super();
         this.obj = obj;
         this.index = index;
     }
@@ -854,8 +948,9 @@ class ELEM_NODE {
     }
 }
 
-class SLICE_NODE {
+class SLICE_NODE extends NODE  {
     constructor(obj,start, end, step) {
+        super();
         this.obj = obj;
         this.start = start;
         this.end = end;
@@ -876,13 +971,18 @@ class SLICE_NODE {
                 endIndex = this.end ? this.end.reduce(outerScope).value() : new NUMERIC_NODE(length),
                 step = this.step ? this.step.reduce(outerScope).value() : new NUMERIC_NODE(startIndex.val < endIndex.val ? 1 : -1);
 
-            return obj.slice(startIndex.val, endIndex.val, step.val);
+            let res = obj.slice(startIndex.val, endIndex.val, step.val);
+
+            this._text = res.text();
+
+            return res;
         }
     }
 }
 
-class PROPERTY_NODE {
+class PROPERTY_NODE extends NODE  {
     constructor(obj, name) {
+        super();
         this.obj = obj;
         this.name = name;
     }
@@ -973,17 +1073,18 @@ class ARRAY_LIST_NODE extends ITERABLE {
         return list;
     }
 
-    toString() {
-        return '[' + this.val + ']';
-    }
-
     value() {
         return this;
     }
+
+    text() {
+        return `[ ${this.val.map(elem => elem.text()).join(', ')} ]`;
+    }
 }
 
-class ARGLIST_NODE {
+class ARGLIST_NODE extends NODE {
     constructor(stmts) {
+        super();
         this.stmts = stmts;
     }
 

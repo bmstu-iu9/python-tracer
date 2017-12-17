@@ -496,16 +496,29 @@ class ASTBuilder {
 
     getIfStmt(ctx) {
 
-        let ifBlock = ctx.suite(0),
-            elseBlock = ctx.suite(1);
+        let ifBlocks = [],
+            elseBlock = null,
+            children = ctx.children.slice(4);
 
-        //console.log('IF STMT');
+        ifBlocks.push({
+            condition: this.getTest(ctx.test(0)),
+            stmt: this.getSuite(ctx.suite(0))
+        });
 
-        return new ASTNodes.IF_NODE(
-            this.getTest(ctx.test(0)),
-            this.getSuite(ctx.suite(0)),
-            elseBlock ? this.getSuite(ctx.suite(1)) : null
-        )
+        while (children.length && children[0].getText() === 'elif') {
+            ifBlocks.push({
+                condition: this.getTest(children[1]),
+                stmt: this.getSuite(children[3])
+            });
+
+            children = children.slice(4);
+        }
+
+        if (children.length) {
+            elseBlock = this.getSuite(children[2]);
+        }
+
+        return new ASTNodes.IF_NODE(ifBlocks, elseBlock);
     }
 
     getTest(ctx) {
