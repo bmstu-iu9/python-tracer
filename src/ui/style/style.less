@@ -15,8 +15,10 @@ body {
 
     & .header__logo{
       display: inline-block;
+      padding: 0 20px;
       font-weight: bold;
       font-size: 24px;
+      border-right: 1px solid #868e96;
     }
 
     & .header__block{
@@ -48,49 +50,106 @@ body {
         &--inner{
           font-weight: bold;
           font-size: 18px;
-          line-height: 25px;
+          line-height: 20px;
           display: inline-block;
-          width: 80px;
-          height: 80px;
+          width: 70px;
+          height: 70px;
           padding: 20px;
           border-radius: 50px;
-          border: 7px solid #1bc98e;
+          border: 5px solid #1bc98e;
         }
 
-        &--blue>div{
-          border-color: #1ca8dd;
+        &--gray>div{
+          border-color: #404345;
+        }
+
+        &--gray.top__icon--active>div{
+          background: #1e2127;
         }
 
         &--green>div{
           border-color: #1bc98e;
         }
 
+        &--green.top__icon--active>div{
+          background: rgba(27, 201, 142, 0.44);
+        }
+
         &--red>div{
           border-color: #e64759;
+        }
+
+        &--red.top__icon--active>div{
+          background: rgba(230, 71, 89, 0.49);
         }
       }
     }
 
     & .content__input{
+    }
+
+    & .content__button{
+      color: #1e2127;
+      border: none;
+      outline: none;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+      cursor: pointer;
+
+      &--green{
+        background: #1BC98E;
+      }
+
+      &--blue{
+        background: #1997c6;
+      }
+    }
+
+    & .CodeMirror{
+      background: #1e2127 !important;
       width: 100%;
-      background: #1e2127;
       color: white;
       height: 30rem;
       border-radius: 5px;
-      padding: 15px;
-      resize: none;
-      border: none;
-      outline: none;
+      cursor: text;
+
+      &-gutters{
+        background-color: #2b2e34 !important;
+      }
+
+      &-linenumber{
+        color: white;
+      }
+
+      &-vscrollbar{
+
+      }
     }
 
     & .content__left{
       padding: 15px;
-
       border-right: 1px solid #868e96;
     }
 
     & .content__right{
       padding: 15px;
+    }
+
+    & .description{
+      padding: 10px;
+
+      &__title{
+        font-weight: bold;
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      &__text{
+        color: #bababa;
+        padding-left: 10px;
+        border-left: 2px solid #c0c0c0;
+      }
     }
   }
 
