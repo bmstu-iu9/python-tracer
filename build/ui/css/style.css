@@ -6,18 +6,36 @@ body {
   font-family: "Source Code Pro", sans-serif;
 }
 .tracer {
+  margin: auto;
   height: 100%;
   padding: 15px;
 }
 .tracer__header {
   padding: 15px;
   border-bottom: 1px solid #868e96;
+  line-height: 50px;
 }
 .tracer__header .header__logo {
   display: inline-block;
   padding: 0 20px;
   font-weight: bold;
   font-size: 24px;
+  border-right: 1px solid #868e96;
+}
+.tracer__header .header__user {
+  display: inline-block;
+  padding: 0 20px;
+}
+.tracer__header .header__menu {
+  display: inline-block;
+  padding: 0 20px;
+}
+.tracer__header .header__menu .menu__link {
+  color: white;
+}
+.tracer__header .header__summary {
+  display: inline-block;
+  padding: 0 20px;
   border-right: 1px solid #868e96;
 }
 .tracer__header .header__block {
@@ -28,15 +46,22 @@ body {
   font-weight: bold;
   margin-right: 5px;
 }
-.tracer__content .content__top {
+.tracer__taskBar {
   padding: 15px;
   border-bottom: 1px solid #868e96;
-}
-.tracer__content .content__top .top__icon {
-  padding: 15px;
   text-align: center;
 }
-.tracer__content .content__top .top__icon--inner {
+.tracer__taskBar button {
+  cursor: pointer;
+}
+.tracer__taskBar .top__icon {
+  display: inline-block;
+  padding: 15px;
+  text-align: center;
+  user-select: none;
+}
+.tracer__taskBar .top__icon--inner {
+  cursor: pointer;
   font-weight: bold;
   font-size: 18px;
   line-height: 20px;
@@ -46,41 +71,42 @@ body {
   padding: 20px;
   border-radius: 50px;
   border: 5px solid #1bc98e;
+  transition: background-color ease 0.5s, border-color ease 0.5s;
 }
-.tracer__content .content__top .top__icon--gray > div {
-  border-color: #404345;
+.tracer__taskBar .top__icon--normal > div {
+  border-color: rgba(255, 255, 255, 0.36);
 }
-.tracer__content .content__top .top__icon--gray.top__icon--active > div {
-  background: #1e2127;
+.tracer__taskBar .top__icon--normal.top__icon--active > div {
+  border-color: white;
+  background: rgba(255, 255, 255, 0.1);
 }
-.tracer__content .content__top .top__icon--green > div {
+.tracer__taskBar .top__icon--success > div {
+  color: #1bc98e;
+  border-color: rgba(27, 201, 142, 0.36);
+}
+.tracer__taskBar .top__icon--success.top__icon--active > div {
   border-color: #1bc98e;
+  background: rgba(255, 255, 255, 0.1);
 }
-.tracer__content .content__top .top__icon--green.top__icon--active > div {
-  background: rgba(27, 201, 142, 0.44);
+.tracer__taskBar .top__icon--error > div {
+  color: #e64759;
+  border-color: rgba(230, 71, 89, 0.36);
 }
-.tracer__content .content__top .top__icon--red > div {
+.tracer__taskBar .top__icon--error.top__icon--active > div {
   border-color: #e64759;
+  background: rgba(255, 255, 255, 0.1);
 }
-.tracer__content .content__top .top__icon--red.top__icon--active > div {
-  background: rgba(230, 71, 89, 0.49);
+.tracer__editor .content__block {
+  text-align: center;
 }
-.tracer__content .content__button {
-  color: #1e2127;
-  border: none;
-  outline: none;
+.tracer__editor .content__button {
+  outline: none !important;
   border-radius: 5px;
   padding: 10px;
   margin: 10px 0;
   cursor: pointer;
 }
-.tracer__content .content__button--green {
-  background: #1BC98E;
-}
-.tracer__content .content__button--blue {
-  background: #1997c6;
-}
-.tracer__content .CodeMirror {
+.tracer__editor .CodeMirror {
   background: #1e2127 !important;
   width: 100%;
   color: white;
@@ -88,33 +114,40 @@ body {
   border-radius: 5px;
   cursor: text;
 }
-.tracer__content .CodeMirror-gutters {
+.tracer__editor .CodeMirror-gutters {
   background-color: #2b2e34 !important;
 }
-.tracer__content .CodeMirror-linenumber {
+.tracer__editor .CodeMirror-linenumber {
   color: white;
 }
-.tracer__content .content__left {
+.tracer__editor .content__left {
   padding: 15px;
   border-right: 1px solid #868e96;
 }
-.tracer__content .content__right {
+.tracer__editor .content__right {
   padding: 15px;
 }
-.tracer__content .description {
+.tracer__editor .description {
   padding: 10px;
 }
-.tracer__content .description__title {
+.tracer__editor .description__title {
   font-weight: bold;
   font-size: 18px;
   margin-bottom: 10px;
 }
-.tracer__content .description__text {
+.tracer__editor .description__text {
   color: #bababa;
-  padding-left: 10px;
-  border-left: 2px solid #c0c0c0;
+  margin-top: 20px;
+  padding: 10px 10px 20px 15px;
+  border-radius: 5px;
+  border: 1px solid #c0c0c0;
 }
 .tracer__footer {
+  margin-top: 10px;
   border-top: 1px solid #868e96;
   padding: 15px;
+}
+.tracer__footer .footer__info {
+  color: #606060;
+  text-align: center;
 }
