@@ -1,0 +1,301 @@
+VAL:::
+[ NUMERIC_NODE { val: 75 },
+  NUMERIC_NODE { val: 29 },
+  NUMERIC_NODE { val: 55 },
+  NUMERIC_NODE { val: 73 } ]
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'res',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: STRING_NODE { val: '' } }
+-----
+STRING_NODE { val: '' }
+res = ''
+*****
+IF_NODE {
+  condition: 
+   COMPARISON_NODE {
+     op: '>',
+     stmtLeft: FUNCTION_CALL_NODE { ident: [Object], arglist: [Object] },
+     stmtRight: NUMERIC_NODE { val: 0 } },
+  ifStmt: 
+   [ ASSIGN_NODE { listLeft: [Object], listRight: [Object] },
+     ASSIGN_NODE { listLeft: [Object], listRight: [Object] },
+     WHILE_NODE { condition: [Object], stmts: [Array] } ],
+  elseStmt: null }
+-----
+if
+4 > 0
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'res',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: 
+   FUNCTION_CALL_NODE {
+     ident: IDENT_NODE { name: 'str', scope: [Object] },
+     arglist: ARGLIST_NODE { stmts: [Array] } } }
+-----
+VAL:::
+true
+STRING_NODE { val: '75' }
+res = '75'
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'items',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: 
+   SLICE_NODE {
+     obj: IDENT_NODE { name: 'items', scope: [Object] },
+     start: NUMERIC_NODE { val: 1 },
+     end: null,
+     step: null } }
+-----
+VAL:::
+true
+VAL:::
+true
+VAL:::
+true
+ARRAY_LIST_NODE {
+  val: 
+   [ NUMERIC_NODE { val: 29 },
+     NUMERIC_NODE { val: 55 },
+     NUMERIC_NODE { val: 73 } ],
+  items: 
+   [ NUMERIC_NODE { val: 29 },
+     NUMERIC_NODE { val: 55 },
+     NUMERIC_NODE { val: 73 } ] }
+items = [29,55,73]
+*****
+WHILE_NODE {
+  condition: 
+   COMPARISON_NODE {
+     op: '>',
+     stmtLeft: FUNCTION_CALL_NODE { ident: [Object], arglist: [Object] },
+     stmtRight: NUMERIC_NODE { val: 0 } },
+  stmts: 
+   [ ASSIGN_NODE { listLeft: [Object], listRight: [Object] },
+     ASSIGN_NODE { listLeft: [Object], listRight: [Object] } ] }
+-----
+while
+3 > 0
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'res',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: PLUS_BINARY_NODE { stmts: [ [Object], [Object] ] } }
+-----
+IDENT_NODE {
+  name: 'res',
+  scope: 
+   { putSymbol: [Function],
+     getSymbol: [Function],
+     hasSymbol: [Function],
+     print: [Function] } }
+IDENT_NODE {
+  name: 'sep',
+  scope: 
+   { putSymbol: [Function],
+     getSymbol: [Function],
+     hasSymbol: [Function],
+     print: [Function] } }
+VAL:::
+true
+STRING_NODE { val: '75:29' }
+res = '75:29'
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'items',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: 
+   SLICE_NODE {
+     obj: IDENT_NODE { name: 'items', scope: [Object] },
+     start: NUMERIC_NODE { val: 1 },
+     end: null,
+     step: null } }
+-----
+VAL:::
+true
+VAL:::
+true
+ARRAY_LIST_NODE {
+  val: [ NUMERIC_NODE { val: 55 }, NUMERIC_NODE { val: 73 } ],
+  items: [ NUMERIC_NODE { val: 55 }, NUMERIC_NODE { val: 73 } ] }
+items = [55,73]
+*****
+WHILE_NODE {
+  condition: 
+   COMPARISON_NODE {
+     op: '>',
+     stmtLeft: FUNCTION_CALL_NODE { ident: [Object], arglist: [Object] },
+     stmtRight: NUMERIC_NODE { val: 0 } },
+  stmts: 
+   [ ASSIGN_NODE { listLeft: [Object], listRight: [Object] },
+     ASSIGN_NODE { listLeft: [Object], listRight: [Object] } ] }
+-----
+while
+2 > 0
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'res',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: PLUS_BINARY_NODE { stmts: [ [Object], [Object] ] } }
+-----
+IDENT_NODE {
+  name: 'res',
+  scope: 
+   { putSymbol: [Function],
+     getSymbol: [Function],
+     hasSymbol: [Function],
+     print: [Function] } }
+IDENT_NODE {
+  name: 'sep',
+  scope: 
+   { putSymbol: [Function],
+     getSymbol: [Function],
+     hasSymbol: [Function],
+     print: [Function] } }
+VAL:::
+true
+STRING_NODE { val: '75:29:55' }
+res = '75:29:55'
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'items',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: 
+   SLICE_NODE {
+     obj: IDENT_NODE { name: 'items', scope: [Object] },
+     start: NUMERIC_NODE { val: 1 },
+     end: null,
+     step: null } }
+-----
+VAL:::
+true
+ARRAY_LIST_NODE {
+  val: [ NUMERIC_NODE { val: 73 } ],
+  items: [ NUMERIC_NODE { val: 73 } ] }
+items = [73]
+*****
+WHILE_NODE {
+  condition: 
+   COMPARISON_NODE {
+     op: '>',
+     stmtLeft: FUNCTION_CALL_NODE { ident: [Object], arglist: [Object] },
+     stmtRight: NUMERIC_NODE { val: 0 } },
+  stmts: 
+   [ ASSIGN_NODE { listLeft: [Object], listRight: [Object] },
+     ASSIGN_NODE { listLeft: [Object], listRight: [Object] } ] }
+-----
+while
+1 > 0
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'res',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: PLUS_BINARY_NODE { stmts: [ [Object], [Object] ] } }
+-----
+IDENT_NODE {
+  name: 'res',
+  scope: 
+   { putSymbol: [Function],
+     getSymbol: [Function],
+     hasSymbol: [Function],
+     print: [Function] } }
+IDENT_NODE {
+  name: 'sep',
+  scope: 
+   { putSymbol: [Function],
+     getSymbol: [Function],
+     hasSymbol: [Function],
+     print: [Function] } }
+VAL:::
+true
+STRING_NODE { val: '75:29:55:73' }
+res = '75:29:55:73'
+*****
+ASSIGN_NODE {
+  listLeft: 
+   IDENT_NODE {
+     name: 'items',
+     scope: 
+      { putSymbol: [Function],
+        getSymbol: [Function],
+        hasSymbol: [Function],
+        print: [Function] } },
+  listRight: 
+   SLICE_NODE {
+     obj: IDENT_NODE { name: 'items', scope: [Object] },
+     start: NUMERIC_NODE { val: 1 },
+     end: null,
+     step: null } }
+-----
+ARRAY_LIST_NODE { val: [], items: [] }
+items = []
+*****
+WHILE_NODE {
+  condition: 
+   COMPARISON_NODE {
+     op: '>',
+     stmtLeft: FUNCTION_CALL_NODE { ident: [Object], arglist: [Object] },
+     stmtRight: NUMERIC_NODE { val: 0 } },
+  stmts: 
+   [ ASSIGN_NODE { listLeft: [Object], listRight: [Object] },
+     ASSIGN_NODE { listLeft: [Object], listRight: [Object] } ] }
+-----
+while
+0 > 0
+*****
+RETURN_NODE { stmts: [ IDENT_NODE { name: 'res', scope: [Object] } ] }
+-----
+return 75:29:55:73
+STRING_NODE { val: '75:29:55:73' }
+res = '75:29:55:73'

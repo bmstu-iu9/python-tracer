@@ -9,13 +9,25 @@ class UserInputViewer extends React.Component {
         super(props);
 
         this.state = {
-            code: props.task.input || ''
+            code: props.task.input || '',
+            options: {
+                lineNumbers: false,
+                mode: 'text/x-python',
+                theme: 'dracula',
+                readOnly: this.props.readOnly
+            }
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            code: nextProps.task.input || ''
+            code: nextProps.task.input || '',
+            options: {
+                lineNumbers: false,
+                mode: 'text/x-python',
+                theme: 'dracula',
+                readOnly: nextProps.readOnly
+            }
         });
     }
 
@@ -63,6 +75,13 @@ class UserInputViewer extends React.Component {
         return this.props.task.status == 'success' || this.props.task.status == 'error';
     }
 
+    getEnabled() {
+
+        let task = this.props.task;
+
+        return (task.maxAttempts - (task.attempts || 0)) > 0;
+    }
+
     render() {
         return (
             <div>
@@ -80,13 +99,10 @@ class UserInputViewer extends React.Component {
                     <strong>{this.getStatusMessage()}</strong> {this.props.task.message}
                 </Alert>
                 <CodeMirror
+                    disabled={!this.getEnabled()}
                     value={this.state.code}
                     onBeforeChange={this.onChange.bind(this)}
-                    options={{
-                        lineNumbers: false,
-                        mode: 'text/x-python',
-                        theme: 'dracula'
-                    }}
+                    options={this.state.options}
                 />
             </div>
         );

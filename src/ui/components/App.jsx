@@ -41,13 +41,36 @@ class App extends React.Component {
             tasks: this.state.tasks.map(
                 (task, i) => {
                     if (selectedIndex == i) {
-                        let m = Math.random() * 2 >> 0;
-                        if (m >= 1) {
+                        // let result = tracer(task.source, task.target).split('\n');
+                        // let input = (task.input || '').split('\n');
+                        task.attempts =  (task.attempts || 0) + 1;
+
+                        if (task.attempts >= task.maxAttempts) {
                             task.status = 'error';
-                            task.message = 'Некорректные входные данные в строке 0'
-                        } else {
-                            task.status = 'success';
-                            task.message = 'Решение успешно прошло проверку'
+                            task.message = 'Превышено допустимое количество попыток!',
+                            task.solution = `1. def gcd(x = -69, y = -48)
+2. if True:
+3. x = 69
+4. if True:
+5. y = 48
+6. while True:
+7. rem = 21
+8. x = 48
+9. y = 21
+6. while True:
+7. rem = 6
+8. x = 21
+9. y = 6
+6. while True:
+7. rem = 3
+8. x = 6
+9. y = 3
+6. while True:
+7. rem = 0
+8. x = 3
+9. y = 0
+6. while False:
+10. return 3`
                         }
                     }
                     return task

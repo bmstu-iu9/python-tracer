@@ -99,6 +99,18 @@ body {
 .tracer__editor .content__block {
   text-align: center;
 }
+.tracer__editor .content__block--left {
+  float: left;
+}
+.tracer__editor .content__block--right {
+  float: right;
+}
+.tracer__editor .content__link {
+  padding: 15px;
+}
+.tracer__editor .content__text {
+  padding: 15px;
+}
 .tracer__editor .content__button {
   outline: none !important;
   border-radius: 5px;
