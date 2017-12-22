@@ -11,7 +11,7 @@ class UserInputViewer extends React.Component {
         this.state = {
             code: props.task.input || '',
             options: {
-                lineNumbers: false,
+                lineNumbers: true,
                 mode: 'text/x-python',
                 theme: 'dracula',
                 readOnly: this.props.readOnly
@@ -23,7 +23,7 @@ class UserInputViewer extends React.Component {
         this.setState({
             code: nextProps.task.input || '',
             options: {
-                lineNumbers: false,
+                lineNumbers: true,
                 mode: 'text/x-python',
                 theme: 'dracula',
                 readOnly: nextProps.readOnly
@@ -32,10 +32,12 @@ class UserInputViewer extends React.Component {
     }
 
     componentDidMount() {
-        let editor = $(ReactDOM.findDOMNode(this)).find('.CodeMirror').get(0).CodeMirror;
+        let elem = $(ReactDOM.findDOMNode(this)).find('.CodeMirror').get(0),
+            editor = elem.CodeMirror;
+
 
         editor.setSize(
-            editor.display.lastWrapWidth,
+            $(elem.parentNode.parentNode).width(),
             Math.max(300, editor.lineCount() * editor.defaultTextHeight() + 10)
         );
     }

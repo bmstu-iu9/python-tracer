@@ -1,5 +1,7 @@
 import React from 'react';
-import { Row, Col, Button, Alert } from 'reactstrap';
+import ReactDOM from 'react-dom';
+import { Row, Col, Button, Fade } from 'reactstrap';
+import {Controlled as CodeMirror} from 'react-codemirror2'
 
 import SourceCodeViewer from './SourceCodeViewer';
 import UserInputViewer from './UserInputViewer';
@@ -20,6 +22,20 @@ class Editor extends React.Component {
             selectedTask: nextProps.tasks[nextProps.selectedIndex],
             showSolution: nextProps.tasks[nextProps.selectedIndex].showSolution || false
         });
+
+        if (this.state.selectedTask.solution) {
+            this.resizeSolutionViewer();
+        }
+    }
+
+    resizeSolutionViewer() {
+        let elem = $(ReactDOM.findDOMNode(this)).find('.solutionViewer .CodeMirror').get(0),
+            editor = elem.CodeMirror;
+
+        editor.setSize(
+            $(elem.parentNode.parentNode).width(),
+            this.state.selectedTask.solution.split('\n').length * editor.defaultTextHeight() + 10
+        );
     }
 
     onVerify() {
@@ -46,17 +62,12 @@ class Editor extends React.Component {
     }
 
     render() {
-
-        let solutionLines = (this.state.selectedTask.solution || '').split('\n').map(
-            (line, i) => (<div key={i}>{line}</div>)
-        );
-
         return (
             <Row className="tracer__editor">
-                <Col xs={6}>
+                <Col xs={12} sm={12} md={6} >
                     <SourceCodeViewer task={this.state.selectedTask}/>
                 </Col>
-                <Col xs={6}>
+                <Col xs={12} sm={12} md={6}>
                     <UserInputViewer
                         task={this.state.selectedTask}
                         selectedIndex={this.props.selectedIndex}
@@ -87,9 +98,15 @@ class Editor extends React.Component {
                         <div className="clearfix"></div>
                     </div>
 
-                    <Alert color="success" isOpen={this.state.showSolution}>
-                        {solutionLines}
-                    </Alert>
+
+                    <Fade in={this.state.showSolution}>
+                        <CodeMirror className="solutionViewer" value={this.state.selectedTask.solution} options={{
+                            readOnly: true,
+                            lineNumbers: false,
+                            mode: 'text/x-python',
+                            theme: 'dracula'
+                        }}/>
+                    </Fade>
                 </Col>
             </Row>
         );

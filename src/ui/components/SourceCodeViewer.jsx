@@ -24,10 +24,11 @@ class SourceCodeViewer extends React.Component {
     }
 
     componentDidMount() {
-        let editor = $(ReactDOM.findDOMNode(this)).find('.CodeMirror').get(0).CodeMirror;
+        let elem = $(ReactDOM.findDOMNode(this)).find('.CodeMirror').get(0),
+            editor = elem.CodeMirror;
 
         editor.setSize(
-            editor.display.lastWrapWidth,
+            $(elem.parentNode.parentNode).width(),
             Math.max(500, editor.lineCount() * editor.defaultTextHeight() + 10)
         );
     }
@@ -45,6 +46,7 @@ class SourceCodeViewer extends React.Component {
                 <CodeMirror
                     id="tracer__sourceCode"
                     value={this.state.code}
+                    onRe
                     options={{
                         lineNumbers: true,
                         mode: 'text/x-python',

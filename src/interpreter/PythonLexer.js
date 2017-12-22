@@ -403,7 +403,20 @@ var atn = new antlr4.atn.ATNDeserializer().deserialize(serializedATN);
 
 var decisionsToDFA = atn.decisionToState.map( function(ds, index) { return new antlr4.dfa.DFA(ds, index); });
 
+var tokens = [];
+
+var indents = [];
+
+var opened = 0;
+
+var lastToken = null;
+
 function PythonLexer(input) {
+    tokens = [];
+    indents = [];
+    opened = 0;
+    lastToken = null;
+
 	antlr4.Lexer.call(this, input);
     this._interp = new antlr4.atn.LexerATNSimulator(this, atn, decisionsToDFA, new antlr4.PredictionContextCache());
     return this;
@@ -591,15 +604,6 @@ PythonLexer.ruleNames = [ "STRING", "NUMBER", "INTEGER", "DEF", "RETURN",
                           "ID_START", "ID_CONTINUE" ];
 
 PythonLexer.grammarFileName = "Python.g4";
-
-
-    var tokens = [];
-
-    var indents = [];
-
-    var opened = 0;
-
-    var lastToken = null;
 
     // @Override
     PythonLexer.prototype.emitToken = function (t) {

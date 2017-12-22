@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import { Container, Button } from 'reactstrap';
 
@@ -14,8 +15,32 @@ class App extends React.Component {
 
         this.state = {
             selectedIndex: 0,
-            tasks: this.props.tasks.slice()
+            tasks: this.props.tasks.slice().map(
+                task => {
+                    task.maxAttempts = task.maxAttempts || 10;
+                    task.input = '';
+                    task.status = '';
+                    task.message = '';
+                    task.attempts = 0;
+                    task.solution = '';
+                    return task;
+                }
+            )
         };
+    }
+
+    componentDidMount() {
+        $(ReactDOM.findDOMNode(this)).find('.CodeMirror').each((index, elem) => {
+
+            $(window).resize(() => {
+                let editor = elem.CodeMirror;
+                
+                editor.setSize(
+                    $(elem.parentNode.parentNode).width(),
+                    editor.display.lastWrapHeight
+                );
+            });
+        });
     }
 
     next() {
@@ -41,37 +66,7 @@ class App extends React.Component {
             tasks: this.state.tasks.map(
                 (task, i) => {
                     if (selectedIndex == i) {
-                        // let result = tracer(task.source, task.target).split('\n');
-                        // let input = (task.input || '').split('\n');
-                        task.attempts =  (task.attempts || 0) + 1;
-
-                        if (task.attempts >= task.maxAttempts) {
-                            task.status = 'error';
-                            task.message = 'Превышено допустимое количество попыток!',
-                            task.solution = `1. def gcd(x = -69, y = -48)
-2. if True:
-3. x = 69
-4. if True:
-5. y = 48
-6. while True:
-7. rem = 21
-8. x = 48
-9. y = 21
-6. while True:
-7. rem = 6
-8. x = 21
-9. y = 6
-6. while True:
-7. rem = 3
-8. x = 6
-9. y = 3
-6. while True:
-7. rem = 0
-8. x = 3
-9. y = 0
-6. while False:
-10. return 3`
-                        }
+                        return verifyTask(task);
                     }
                     return task
                 }
@@ -116,3 +111,50 @@ class App extends React.Component {
 }
 
 export default App;
+
+
+function verifyTask(task) {
+    let trace = tracer(task.source, task.target).split('\n'),
+        input = task.input.split('\n');
+
+    if (trace.length >= input.length) {
+        let line = 0;
+
+        while (isEqual(trace[line] || '',input[line] || '')) {
+            line++;
+        }
+
+        if (line == trace.length) {
+            task.status = 'success';
+            task.message = 'Задание успешно выполнено!';
+        } else {
+            task.status = 'error';
+            task.message = `Некорректная строка: ${line + 1}`;
+            task.attempts++;
+        }
+    } else {
+        task.status = 'error';
+        task.message = `Некорректная строка: ${trace.length}`;
+        task.attempts++;
+    }
+
+    if (task.attempts == task.maxAttempts && task.status == 'error') {
+
+        task.message = `Превышено количество попыток!`;
+        task.solution = trace.join('\n');
+    }
+
+    return task;
+}
+
+function isEqual(line1, line2) {
+    let regExp = /\s+/g;
+
+    line1 = line1.replace(regExp, '');
+    line2 = line2.replace(regExp, '');
+
+    console.log('1', line1);
+    console.log('2', line2);
+
+    return line1 === line2;
+}
