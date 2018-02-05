@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 import { Alert } from 'reactstrap';
+import Task from '../tasks/Task';
 
 class UserInputViewer extends React.Component {
 
@@ -9,7 +10,7 @@ class UserInputViewer extends React.Component {
         super(props);
 
         this.state = {
-            code: props.task.input || '',
+            code: props.task._input || '',
             options: {
                 lineNumbers: true,
                 mode: 'text/x-python',
@@ -21,7 +22,7 @@ class UserInputViewer extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            code: nextProps.task.input || '',
+            code: nextProps.task._input || '',
             options: {
                 lineNumbers: true,
                 mode: 'text/x-python',
@@ -54,9 +55,9 @@ class UserInputViewer extends React.Component {
     }
 
     getStatus() {
-        if (this.props.task.status == 'success') {
+        if (this.props.task.status() == Task.statuses.SUCCESS) {
             return "success"
-        } else if (this.props.task.status == 'error') {
+        } else if (this.props.task.status() == Task.statuses.ERROR || this.props.task.status() == Task.statuses.BLOCKED) {
             return "danger";
         }
 
@@ -64,9 +65,9 @@ class UserInputViewer extends React.Component {
     }
 
     getStatusMessage() {
-        if (this.props.task.status == 'success') {
+        if (this.props.task.status() == Task.statuses.SUCCESS) {
             return "Тесты пройдены!"
-        } else if (this.props.task.status == 'error') {
+        } else if (this.props.task.status() == Task.statuses.ERROR) {
             return "Ошибка!"
         }
 
@@ -74,14 +75,11 @@ class UserInputViewer extends React.Component {
     }
 
     getVisible() {
-        return this.props.task.status == 'success' || this.props.task.status == 'error';
+        return this.props.task.status() !== Task.statuses.INITIAL;
     }
 
     getEnabled() {
-
-        let task = this.props.task;
-
-        return (task.maxAttempts - (task.attempts || 0)) > 0;
+        return this.props.task.status() !== Task.statuses.BLOCKED;
     }
 
     render() {
@@ -91,14 +89,14 @@ class UserInputViewer extends React.Component {
                     <div className="description__title">Задание {this.props.selectedIndex + 1}:</div>
                     <div className="description__text">
                         <div>Выполните построчный разбор функции</div>
-                        <strong><code>{this.props.task.target}</code></strong>
+                        <strong><code>{this.props.task._target}</code></strong>
                     </div>
                 </div>
                 <div className="description">
                     <div className="description__title">Решение:</div>
                 </div>
                 <Alert color={this.getStatus()} isOpen={this.getVisible()}>
-                    <strong>{this.getStatusMessage()}</strong> {this.props.task.message}
+                    <strong>{this.getStatusMessage()}</strong> {this.props.task.message()}
                 </Alert>
                 <CodeMirror
                     disabled={!this.getEnabled()}

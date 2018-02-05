@@ -18,14 +18,14 @@ module.exports.len = createFunction('len', ['arr'], function(args, scope) {
         length = arr.items.length;
     }
 
-    return new ASTNodes.NUMERIC_NODE(length);
+    return new ASTNodes.INTEGER_NODE(length);
 });
 
 module.exports.sqrt = createFunction('sqrt', ['n'], function(args, scope) {
     let n = args[0];
 
     if (n instanceof ASTNodes.NUMERIC_NODE) {
-        return new ASTNodes.NUMERIC_NODE(Math.sqrt(n.val));
+        return new ASTNodes.FLOAT_NODE(Math.sqrt(n.val));
     }
 });
 

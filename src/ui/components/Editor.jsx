@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Row, Col, Button, Fade } from 'reactstrap';
 import {Controlled as CodeMirror} from 'react-codemirror2'
 
+import Task from '../tasks/Task';
 import SourceCodeViewer from './SourceCodeViewer';
 import UserInputViewer from './UserInputViewer';
 
@@ -13,17 +14,17 @@ class Editor extends React.Component {
 
         this.state = {
             selectedTask: this.props.tasks[this.props.selectedIndex],
-            showSolution: this.props.tasks[this.props.selectedIndex].showSolution || false
+            showSolution: false
         }
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
             selectedTask: nextProps.tasks[nextProps.selectedIndex],
-            showSolution: nextProps.tasks[nextProps.selectedIndex].showSolution || false
+            showSolution: false
         });
 
-        if (this.state.selectedTask.solution) {
+        if (this.state.selectedTask._solution) {
             this.resizeSolutionViewer();
         }
     }
@@ -34,7 +35,7 @@ class Editor extends React.Component {
 
         editor.setSize(
             $(elem.parentNode.parentNode).width(),
-            this.state.selectedTask.solution.split('\n').length * editor.defaultTextHeight() + 10
+            this.state.selectedTask._solution.split('\n').length * editor.defaultTextHeight() + 10
         );
     }
 
@@ -45,10 +46,7 @@ class Editor extends React.Component {
     }
 
     getEnabled() {
-
-        let task = this.state.selectedTask;
-
-        return ((task.maxAttempts || Infinity) - (task.attempts || 0)) > 0;
+        return this.state.selectedTask.status() !== Task.statuses.BLOCKED;
     }
 
     toggleShowSolution() {
@@ -78,9 +76,9 @@ class Editor extends React.Component {
                     <div>
                         <div
                             className="content__block content__block--left content__text"
-                            hidden={!this.state.selectedTask.maxAttempts || !this.getEnabled()}
+                            hidden={!this.state.selectedTask._maxAttempts || !this.getEnabled()}
                         >
-                            Осталось попыток: {this.state.selectedTask.maxAttempts - (this.state.selectedTask.attempts || 0)}
+                            Осталось попыток: {this.state.selectedTask._maxAttempts - this.state.selectedTask._attempts}
                         </div>
 
                         <div className="content__block content__block--left content__link" hidden={this.getEnabled()}>
@@ -100,7 +98,7 @@ class Editor extends React.Component {
 
 
                     <Fade in={this.state.showSolution}>
-                        <CodeMirror className="solutionViewer" value={this.state.selectedTask.solution} options={{
+                        <CodeMirror className="solutionViewer" value={this.state.selectedTask._solution} options={{
                             readOnly: true,
                             lineNumbers: false,
                             mode: 'text/x-python',

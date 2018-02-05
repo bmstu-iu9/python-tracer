@@ -467,7 +467,14 @@ class ASTBuilder {
         if (ctx.NAME()) {
             return new ASTNodes.IDENT_NODE(ctx.NAME().getText());
         } else if (ctx.NUMBER()) {
-            return new ASTNodes.NUMERIC_NODE(ctx.NUMBER().getText());
+            let number = ctx.NUMBER().getText();
+
+            if (number.indexOf('.') === -1) {
+                return new ASTNodes.INTEGER_NODE(number);
+            } else {
+                return new ASTNodes.FLOAT_NODE(number);
+            }
+
         } else if (['True', 'False'].indexOf(cyrSymbol) !== -1) {
             return new ASTNodes.BOOLEAN_NODE(cyrSymbol === 'True')
         }  else if (cyrSymbol === 'None') {

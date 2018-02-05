@@ -24,6 +24,7 @@ body {
 }
 .tracer__header .header__user {
   display: inline-block;
+  vertical-align: middle;
   padding: 0 20px;
 }
 .tracer__header .header__menu {
@@ -38,13 +39,17 @@ body {
   padding: 0 20px;
   border-right: 1px solid #868e96;
 }
-.tracer__header .header__block {
+.tracer__header .header__line {
   display: inline-block;
   margin-right: 10px;
+  vertical-align: middle;
 }
-.tracer__header .header__block .block__label {
+.tracer__header .header__line .block__label {
   font-weight: bold;
   margin-right: 5px;
+}
+.tracer__header .header__block {
+  line-height: 25px;
 }
 .tracer__taskBar {
   padding: 15px;

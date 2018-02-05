@@ -13,13 +13,13 @@ class SourceCodeViewer extends React.Component {
         super(props);
 
         this.state = {
-            code: props.task.source || ''
+            code: props.task._source || ''
         };
     }
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            code: nextProps.task.source || ''
+            code: nextProps.task._source || ''
         });
     }
 

@@ -34,6 +34,8 @@ class UNDEFINED_NODE extends TYPE_NODE {
         super();
 
         this.name = name;
+
+        this.type = 'undefined';
     }
 
     cast() {
@@ -60,6 +62,8 @@ class IDENT_NODE extends TYPE_NODE {
 
         this.name = name;
         this.scope = new Scope();
+
+        this.type = 'ident';
     }
 
     reduce(outerScope) {
@@ -106,6 +110,8 @@ class NUMERIC_NODE extends TYPE_NODE {
         } else {
             throw new Error('Невозможно создать числовой тип: ', val);
         }
+
+        this.type = 'numeric';
     }
 
     cast(obj) {
@@ -146,6 +152,170 @@ class NUMERIC_NODE extends TYPE_NODE {
 
 }
 
+class INTEGER_NODE extends NUMERIC_NODE {
+    constructor(val) {
+        super(val);
+
+        this.type = 'int';
+    }
+
+    clone() {
+        return new INTEGER_NODE(this.val);
+    }
+
+    add(value) {
+        if (value instanceof INTEGER_NODE || value instanceof BOOLEAN_NODE) {
+            return new INTEGER_NODE(this.val + value.val);
+        } else if (value instanceof FLOAT_NODE) {
+            return new FLOAT_NODE(this.val + value.val);
+        }
+
+        throw new Error('Невозможно сложить int и ' + value.type);
+    }
+
+    sub(value) {
+        if (value instanceof INTEGER_NODE || value instanceof BOOLEAN_NODE) {
+            return new INTEGER_NODE(this.val - value.val);
+        } else if (value instanceof FLOAT_NODE) {
+            return new FLOAT_NODE(this.val - value.val);
+        }
+
+        throw new Error('Невозможно вычесть из int: ' + value.type);
+    }
+
+    mul(value) {
+        if (value instanceof INTEGER_NODE || value instanceof BOOLEAN_NODE) {
+            return new INTEGER_NODE(this.val * value.val);
+        } else if (value instanceof FLOAT_NODE) {
+            return new FLOAT_NODE(this.val * value.val);
+        }
+
+        throw new Error('Невозможно умножить int на ' + value.type);
+    }
+
+    div(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            let res = this.val / value.val;
+
+            if (Number.isInteger(res)) {
+                return new INTEGER_NODE(res);
+            }
+
+            return new FLOAT_NODE(res);
+        }
+
+        throw new Error('Невозможно поделить int на ' + value.type);
+    }
+
+    floor(value) {
+        if (value instanceof INTEGER_NODE || value instanceof BOOLEAN_NODE) {
+            return new INTEGER_NODE(this.val / value.val >> 0);
+        } else if (value instanceof FLOAT_NODE) {
+            return new FLOAT_NODE(this.val / value.val >> 0);
+        }
+
+        throw new Error('Невозможно поделить int на ' + value.type);
+    }
+
+    mod(value) {
+        if (value instanceof INTEGER_NODE || value instanceof BOOLEAN_NODE) {
+            return new INTEGER_NODE(this.val % value.val);
+        } else if (value instanceof FLOAT_NODE) {
+            return new FLOAT_NODE(this.val % value.val);
+        }
+
+        throw new Error('Невозможно получить остаток от деления int на ' + value.type);
+    }
+
+    pow(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            let res = Math.pow(this.val, value.val);
+
+            if (Number.isInteger(res)) {
+                return new INTEGER_NODE(res);
+            }
+
+            return new FLOAT_NODE(res);
+        }
+
+        throw new Error('Невозможно возвести int в степень ' + value.type);
+    }
+}
+
+class FLOAT_NODE extends NUMERIC_NODE {
+    constructor(val) {
+        super(val);
+    }
+
+    clone() {
+        return new FLOAT_NODE(this.val);
+    }
+
+    text() {
+        if (Number.isInteger(this.val)) {
+            return this.val.toFixed(1);
+        }
+
+        return this.val;
+    }
+
+    add(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            return new FLOAT_NODE(this.val + value.val);
+        }
+
+        throw new Error('Невозможно сложить float и ' + value.type);
+    }
+
+    sub(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            return new FLOAT_NODE(this.val - value.val);
+        }
+
+        throw new Error('Невозможно вычесть из float: ' + value.type);
+    }
+
+    mul(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            return new FLOAT_NODE(this.val * value.val);
+        }
+
+        throw new Error('Невозможно умножить float на ' + value.type);
+    }
+
+    div(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            return new FLOAT_NODE(this.val / value.val);
+        }
+
+        throw new Error('Невозможно поделить float на ' + value.type);
+    }
+
+    floor(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            return new FLOAT_NODE(this.val / value.val >> 0);
+        }
+
+        throw new Error('Невозможно поделить infloatt на ' + value.type);
+    }
+
+    mod(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            return new FLOAT_NODE(this.val % value.val);
+        }
+
+        throw new Error('Невозможно получить остаток от деления float на ' + value.type);
+    }
+
+    pow(value) {
+        if (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE) {
+            return new FLOAT_NODE(Math.pow(this.val, value.val));
+        }
+
+        throw new Error('Невозможно возвести float в степень ' + value.type);
+    }
+}
+
 class STRING_NODE extends ITERABLE {
     constructor(val) {
 
@@ -154,7 +324,7 @@ class STRING_NODE extends ITERABLE {
         if (val instanceof TYPE_NODE) {
             this.val = this.cast(val).val;
         } else if (typeof val === 'string') {
-            this.val = val.replace(/^'|'$/g, '');
+            this.val = val.replace(/^'|^"|'$|"$/g, '');
         } else {
             throw new Error('Невозможно создать строковый тип: ', val);
         }
@@ -222,6 +392,14 @@ class STRING_NODE extends ITERABLE {
         return new STRING_NODE(res.join(''));
     }
 
+    add(value) {
+        if (value instanceof STRING_NODE) {
+            return new STRING_NODE(this.val + value.val);
+        }
+
+        throw new Error('Невозможно выполнить конкатенацию string и ' + value.type);
+    }
+
     value() {
         return this;
     }
@@ -249,6 +427,8 @@ class BOOLEAN_NODE extends TYPE_NODE {
         } else {
             throw new Error('Невозможно создать логический тип: ', val);
         }
+
+        this.type = 'boolean';
     }
 
     clone() {
@@ -269,6 +449,38 @@ class BOOLEAN_NODE extends TYPE_NODE {
         }
     }
 
+    asInteger() {
+        return new INTEGER_NODE(+this.val);
+    }
+
+    add(value) {
+        return this.asInteger().add(value);
+    }
+
+    sub(value) {
+        return this.asInteger().sub(value);
+    }
+
+    mul(value) {
+        return this.asInteger().mul(value);
+    }
+
+    div(value) {
+        return this.asInteger().div(value);
+    }
+
+    floor(value) {
+        return this.asInteger().floor(value);
+    }
+
+    mod(value) {
+        return this.asInteger().mod(value);
+    }
+
+    pow(value) {
+        return this.asInteger().pow(value);
+    }
+
     reduce() {
         return this
     }
@@ -287,6 +499,7 @@ class NONE_NODE extends TYPE_NODE {
         super();
 
         this.val = 'None';
+        this.type = 'none';
     }
 
     clone() {
@@ -330,6 +543,8 @@ class FUNCTION_NODE extends TYPE_NODE {
         if (typeof external === 'function') {
             this.external = external;
         }
+
+        this.type = 'function';
     }
 
     clone() {
@@ -551,7 +766,7 @@ class OR_BIT_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let res = new INTEGER_NODE(this.stmts[0].reduce(outerScope).value().val);
         let strings = [res.text()];
 
         for (let i = 1; i < this.stmts.length; i++) {
@@ -560,7 +775,7 @@ class OR_BIT_NODE extends NODE  {
 
             strings.push(right.text());
 
-            res = new NUMERIC_NODE(res.val | right.val);
+            res = new INTEGER_NODE(res.val | right.val);
         }
 
         this._text = strings.join(' | ');
@@ -576,7 +791,7 @@ class AND_BIT_NODE extends NODE {
     }
 
     reduce(outerScope) {
-        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let res = new INTEGER_NODE(this.stmts[0].reduce(outerScope).value().val);
         let strings = [res.text()];
 
         for (let i = 1; i < this.stmts.length; i++) {
@@ -585,7 +800,7 @@ class AND_BIT_NODE extends NODE {
 
             strings.push(right.text());
 
-            res = new NUMERIC_NODE(res.val & right.val);
+            res = new INTEGER_NODE(res.val & right.val);
         }
 
         this._text = strings.join(' | ');
@@ -600,10 +815,10 @@ class XOR_BIT_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let res = new INTEGER_NODE(this.stmts[0].reduce(outerScope).value().val);
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res = new NUMERIC_NODE(res.val ^ this.stmts[i].reduce(outerScope).value().val);
+            res = new INTEGER_NODE(res.val ^ this.stmts[i].reduce(outerScope).value().val);
         }
 
         return res;
@@ -621,14 +836,14 @@ class SHIFT_BIT_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-        let left = new NUMERIC_NODE(this.stmtLeft.reduce(outerScope).value().val),
-            right = this.stmtRight ? new NUMERIC_NODE(this.stmtRight.reduce(outerScope).value().val) : null;
+        let left = new INTEGER_NODE(this.stmtLeft.reduce(outerScope).value().val),
+            right = this.stmtRight ? new INTEGER_NODE(this.stmtRight.reduce(outerScope).value().val) : null;
 
         if (right === null) {
             return left;
         }
 
-        return this.op === '>>' ? new NUMERIC_NODE(left.val >> right.val) : new NUMERIC_NODE(left.val << right.val);
+        return this.op === '>>' ? new INTEGER_NODE(left.val >> right.val) : new INTEGER_NODE(left.val << right.val);
     }
 }
 
@@ -640,31 +855,15 @@ class PLUS_BINARY_NODE extends NODE  {
 
     reduce(outerScope) {
 
-        let res = this.stmts[0].reduce(outerScope).value(),
-            strings = [res.text()],
-            Type = NUMERIC_NODE;
-
-        if (res instanceof STRING_NODE) {
-            Type = STRING_NODE
-        } else if (res instanceof ARRAY_LIST_NODE) {
-            Type = ARRAY_LIST_NODE;
-        }
+        let res = this.stmts[0].reduce(outerScope).value(), strings = [res.text()];
 
         for (let i = 1; i < this.stmts.length; i++) {
 
             let stmt = this.stmts[i].reduce(outerScope).value();
 
-            if (Type === NUMERIC_NODE || Type === STRING_NODE || Type === BOOLEAN_NODE) {
-                res = new Type(res.val + stmt.val).value();
-            } else if (Type === ARRAY_LIST_NODE) {
-                if (stmt instanceof ARRAY_LIST_NODE) {
-                    res = new ARRAY_LIST_NODE(res.val.concat(stmt.val));
+            res = res.add(stmt);
 
-                    res.val = res.items;
-                }
-            }
-
-            strings.push(res.text())
+            strings.push(res.text());
         }
 
         this._text = strings.join(' + ');
@@ -680,10 +879,16 @@ class MINUS_BINARY_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let res = this.stmts[0].reduce(outerScope).value();
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res = new NUMERIC_NODE(res.val - this.stmts[i].reduce(outerScope).value().val);
+            let value = this.stmts[i].reduce(outerScope).value();
+            if ((res instanceof NUMERIC_NODE || res instanceof BOOLEAN_NODE) &&
+                (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE)) {
+                res = res.sub(value);
+            } else {
+                throw new Error('Невозможно выполнить вычитание: ', res.text(), value.text());
+            }
         }
 
         return res;
@@ -697,10 +902,16 @@ class MUL_BINARY_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let res = this.stmts[0].reduce(outerScope).value();
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res = new NUMERIC_NODE(res.val * this.stmts[i].reduce(outerScope).value().val);
+            let value = this.stmts[i].reduce(outerScope).value();
+            if ((res instanceof NUMERIC_NODE || res instanceof BOOLEAN_NODE) &&
+                (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE)) {
+                res = res.mul(value);
+            } else {
+                throw new Error('Невозможно выполнить умножение: ', res.text(), value.text());
+            }
         }
 
         return res;
@@ -714,10 +925,16 @@ class DIV_BINARY_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let res = this.stmts[0].reduce(outerScope).value();
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res = new NUMERIC_NODE(res.val / this.stmts[i].reduce(outerScope).value().val);
+            let value = this.stmts[i].reduce(outerScope).value();
+            if ((res instanceof NUMERIC_NODE || res instanceof BOOLEAN_NODE) &&
+                (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE)) {
+                res = res.div(value);
+            } else {
+                throw new Error('Невозможно выполнить деление: ', res.text(), value.text());
+            }
         }
 
         return res;
@@ -731,10 +948,16 @@ class FLOOR_DIV_BINARY_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let res = this.stmts[0].reduce(outerScope).value();
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res = new NUMERIC_NODE((res.val / this.stmts[i].reduce(outerScope).value().val) >> 0);
+            let value = this.stmts[i].reduce(outerScope).value();
+            if ((res instanceof NUMERIC_NODE || res instanceof BOOLEAN_NODE) &&
+                (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE)) {
+                res = res.floor(value);
+            } else {
+                throw new Error('Невозможно выполнить целочисленное деление: ', res.text(), value.text());
+            }
         }
 
         return res;
@@ -748,10 +971,16 @@ class MOD_BINARY_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-        let res = new NUMERIC_NODE(this.stmts[0].reduce(outerScope).value().val);
+        let res = this.stmts[0].reduce(outerScope).value();
 
         for (let i = 1; i < this.stmts.length; i++) {
-            res = new NUMERIC_NODE(res.val % this.stmts[i].reduce(outerScope).value().val);
+            let value = this.stmts[i].reduce(outerScope).value();
+            if ((res instanceof NUMERIC_NODE || res instanceof BOOLEAN_NODE) &&
+                (value instanceof NUMERIC_NODE || value instanceof BOOLEAN_NODE)) {
+                res = res.mod(value);
+            } else {
+                throw new Error('Невозможно получить остаток от деления: ', res.text(), value.text());
+            }
         }
 
         return res;
@@ -765,7 +994,19 @@ class PLUS_UNARY_NODE extends NODE {
     }
 
     reduce(outerScope) {
-        return new NUMERIC_NODE( + this.stmt.reduce(outerScope).value().val );
+        let value = this.stmt.reduce(outerScope).value();
+
+        if (value instanceof NUMERIC_NODE) {
+            if (value instanceof INTEGER_NODE) {
+                return new INTEGER_NODE( + value.val );
+            } else if (value instanceof FLOAT_NODE) {
+                return new FLOAT_NODE( + value.val );
+            }
+        } else if (value instanceof BOOLEAN_NODE) {
+            return new INTEGER_NODE( + value.val );
+        }
+
+        throw new Error('Невозможно изменить знак нечислового типа: ', value.text());
     }
 }
 
@@ -776,7 +1017,19 @@ class MINUS_UNARY_NODE extends NODE {
     }
 
     reduce(outerScope) {
-        return new NUMERIC_NODE( - this.stmt.reduce(outerScope).value().val );
+        let value = this.stmt.reduce(outerScope).value();
+
+        if (value instanceof NUMERIC_NODE) {
+            if (value instanceof INTEGER_NODE) {
+                return new INTEGER_NODE( - value.val );
+            } else if (value instanceof FLOAT_NODE) {
+                return new FLOAT_NODE( - value.val );
+            }
+        } else if (value instanceof BOOLEAN_NODE) {
+            return new INTEGER_NODE( - value.val );
+        }
+
+        throw new Error('Невозможно изменить знак нечислового типа: ', value.text());
     }
 }
 
@@ -787,7 +1040,7 @@ class NOT_BIT_NODE extends NODE {
     }
 
     reduce(outerScope) {
-        return new NUMERIC_NODE( ~ this.stmt.reduce(outerScope).value().val );
+        return new INTEGER_NODE( ~ this.stmt.reduce(outerScope).value().val );
     }
 }
 
@@ -800,11 +1053,14 @@ class POWER_NODE extends NODE {
 
     reduce(outerScope) {
         let base = this.stmtLeft.reduce(outerScope).value(),
-            count = this.stmtRight ? this.stmtRight.reduce(outerScope).value() : new NUMERIC_NODE(1);
+            count = this.stmtRight ? this.stmtRight.reduce(outerScope).value() : new INTEGER_NODE(1);
 
-        if (base instanceof NUMERIC_NODE && count instanceof NUMERIC_NODE) {
-            return new NUMERIC_NODE(Math.pow(base.val, count.val));
+        if ((base instanceof NUMERIC_NODE || base instanceof BOOLEAN_NODE) &&
+            (count instanceof NUMERIC_NODE || count instanceof BOOLEAN_NODE)) {
+            return base.pow(count);
         }
+
+        throw new Error('Невозможно возвести в степень нечисловой тип: ', base.text(), count.text());
     }
 }
 
@@ -944,7 +1200,7 @@ class ELEM_NODE extends NODE  {
         var obj = this.obj.reduce(outerScope).value(),
             index = this.index.reduce(outerScope).value();
 
-        if ((obj instanceof ITERABLE) && (index instanceof NUMERIC_NODE)) {
+        if ((obj instanceof ITERABLE) && (index instanceof INTEGER_NODE)) {
             return obj.elem(index.val);
         }
     }
@@ -969,9 +1225,9 @@ class SLICE_NODE extends NODE  {
             //console.log(this.step);
 
             let length = obj.len(),
-                startIndex = this.start ? this.start.reduce(outerScope).value() : new NUMERIC_NODE(0),
-                endIndex = this.end ? this.end.reduce(outerScope).value() : new NUMERIC_NODE(length),
-                step = this.step ? this.step.reduce(outerScope).value() : new NUMERIC_NODE(startIndex.val < endIndex.val ? 1 : -1);
+                startIndex = this.start ? this.start.reduce(outerScope).value() : new INTEGER_NODE(0),
+                endIndex = this.end ? this.end.reduce(outerScope).value() : new INTEGER_NODE(length),
+                step = this.step ? this.step.reduce(outerScope).value() : new INTEGER_NODE(startIndex.val < endIndex.val ? 1 : -1);
 
             let res = obj.slice(startIndex.val, endIndex.val, step.val);
 
@@ -990,7 +1246,7 @@ class PROPERTY_NODE extends NODE  {
     }
 
     reduce(outerScope) {
-
+        throw new Error('PROPERTY NODE NOT IMPLEMENTED!');
     }
 }
 
@@ -1034,7 +1290,7 @@ class ARRAY_LIST_NODE extends ITERABLE {
         }
 
         console.log('VAL:::');
-        console.log(this.val[index] instanceof NUMERIC_NODE);
+        console.log(this.val[index] instanceof INTEGER_NODE);
 
         return this.val[index].clone();
     }
@@ -1073,6 +1329,18 @@ class ARRAY_LIST_NODE extends ITERABLE {
         list.val = res;
 
         return list;
+    }
+
+    add(value) {
+        if (value instanceof ARRAY_LIST_NODE) {
+            let res = new ARRAY_LIST_NODE(this.val.concat(value.val));
+
+            res.val = res.items;
+
+            return res;
+        }
+
+        throw new Error('Невозможно выполнить конкатенацию списков: ', this.text(), value.text());
     }
 
     value() {
@@ -1121,6 +1389,8 @@ module.exports = {
     POWER_NODE,
     IDENT_NODE,
     NUMERIC_NODE,
+    INTEGER_NODE,
+    FLOAT_NODE,
     STRING_NODE,
     BOOLEAN_NODE,
     COMPARISON_NODE,

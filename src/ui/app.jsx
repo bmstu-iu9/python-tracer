@@ -1,22 +1,19 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import App from './components/App';
 
-import gcdTask from './tasks/gcd';
-import hexTask from './tasks/hex';
-import squareEqualTask from './tasks/squareEqual';
-import factorizeTask from './tasks/factorize';
-import removeDigitTask from './tasks/removeDigit';
+import taskFactory from './tasks/TaskFactory';
 
 const tasks = [
-    gcdTask.generate(true),
-    gcdTask.generate(false),
-    hexTask.generate(),
-    // squareEqualTask.generate([1, 2]),
-    // squareEqualTask.generate([0, 1]),
-    // factorizeTask.generate(),
-    // removeDigitTask.generate()
+    taskFactory.GCD(true),
+    taskFactory.GCD(false),
+    taskFactory.HEX(),
+    taskFactory.SQUARE_EQUAL(),
+    taskFactory.SQUARE_EQUAL(),
+    taskFactory.REMOVE_DIGIT()
 ];
+
 
 ReactDOM.render(
     <App tasks={tasks}/>,

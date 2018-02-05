@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Container, Button } from 'reactstrap';
+import { Container } from 'reactstrap';
 
 import Header from './Header';
 import TaskBar from './TaskBar';
@@ -15,17 +15,7 @@ class App extends React.Component {
 
         this.state = {
             selectedIndex: 0,
-            tasks: this.props.tasks.slice().map(
-                task => {
-                    task.maxAttempts = task.maxAttempts || 10;
-                    task.input = '';
-                    task.status = '';
-                    task.message = '';
-                    task.attempts = 0;
-                    task.solution = '';
-                    return task;
-                }
-            )
+            tasks: this.props.tasks
         };
     }
 
@@ -34,7 +24,7 @@ class App extends React.Component {
 
             $(window).resize(() => {
                 let editor = elem.CodeMirror;
-                
+
                 editor.setSize(
                     $(elem.parentNode.parentNode).width(),
                     editor.display.lastWrapHeight
@@ -66,7 +56,7 @@ class App extends React.Component {
             tasks: this.state.tasks.map(
                 (task, i) => {
                     if (selectedIndex == i) {
-                        return verifyTask(task);
+                        task.attempt();
                     }
                     return task
                 }
@@ -79,7 +69,7 @@ class App extends React.Component {
             tasks: this.state.tasks.map(
                 (task, i) => {
                     if (selectedIndex == i) {
-                        task.input = input;
+                        task._input = input;
                     }
                     return task
                 }
@@ -90,7 +80,7 @@ class App extends React.Component {
     render() {
         return (
             <Container className="tracer">
-                <Header tasks={this.state.tasks}/>
+                <Header tasks={this.state.tasks} user={{ name: 'Сергей Головань', group: 'ИУ9-82'}}/>
                 <TaskBar
                     onNext={this.next.bind(this)}
                     onPrev={this.prev.bind(this)}
@@ -111,50 +101,3 @@ class App extends React.Component {
 }
 
 export default App;
-
-
-function verifyTask(task) {
-    let trace = tracer(task.source, task.target).split('\n'),
-        input = task.input.split('\n');
-
-    if (trace.length >= input.length) {
-        let line = 0;
-
-        while (isEqual(trace[line] || '',input[line] || '')) {
-            line++;
-        }
-
-        if (line == trace.length) {
-            task.status = 'success';
-            task.message = 'Задание успешно выполнено!';
-        } else {
-            task.status = 'error';
-            task.message = `Некорректная строка: ${line + 1}`;
-            task.attempts++;
-        }
-    } else {
-        task.status = 'error';
-        task.message = `Некорректная строка: ${trace.length}`;
-        task.attempts++;
-    }
-
-    if (task.attempts == task.maxAttempts && task.status == 'error') {
-
-        task.message = `Превышено количество попыток!`;
-        task.solution = trace.join('\n');
-    }
-
-    return task;
-}
-
-function isEqual(line1, line2) {
-    let regExp = /\s+/g;
-
-    line1 = line1.replace(regExp, '');
-    line2 = line2.replace(regExp, '');
-
-    console.log('1', line1);
-    console.log('2', line2);
-
-    return line1 === line2;
-}
