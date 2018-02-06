@@ -188,3 +188,14 @@ body {
   border-radius: 10px;
   padding: 15px;
 }
+.tracer__help.modal-dialog {
+  max-width: 950px !important;
+  max-height: 700px !important;
+  color: red;
+}
+.tracer__help.modal-dialog .carousel-caption {
+  background: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  left: 0 !important;
+  bottom: 0 !important;
+}

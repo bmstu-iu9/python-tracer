@@ -10,13 +10,9 @@ class NODE {
     }
 }
 
-class CONTROL_FLOW_NODE extends NODE {
+class CONTROL_FLOW_NODE extends NODE {}
 
-}
-
-class TYPE_NODE extends NODE {
-
-}
+class TYPE_NODE extends NODE {}
 
 class ITERABLE extends TYPE_NODE {
     len() {
@@ -375,9 +371,9 @@ class STRING_NODE extends ITERABLE {
         let res = [],
             i = start;
 
-        console.log('start: ', start);
-        console.log('end: ', end);
-        console.log('step: ', step);
+        //console.log('start: ', start);
+        //console.log('end: ', end);
+        //console.log('step: ', step);
 
         while ((start < end) && (i < end) || (end < start) && (i > end)) {
             //console.log(this.elem(i));
@@ -1168,7 +1164,7 @@ class FUNCTION_CALL_NODE extends NODE {
                         this._text += '\n' + node.text();
 
                         if (node instanceof RETURN_NODE) {
-                            console.log(this._text);
+                            //console.log(this._text);
                             return res;
                         } else {
                             queue.unshift(...res);
@@ -1178,7 +1174,7 @@ class FUNCTION_CALL_NODE extends NODE {
                     }
                 }
 
-                console.log(this._text);
+                //console.log(this._text);
 
                 return new NONE_NODE();
             }
@@ -1267,8 +1263,8 @@ class ARRAY_LIST_NODE extends ITERABLE {
             item => item.reduce(outerScope).value()
         );
 
-        console.log('VAL:::');
-        console.log(this.val);
+        //console.log('VAL:::');
+        //console.log(this.val);
 
         return this;
     }
@@ -1289,8 +1285,8 @@ class ARRAY_LIST_NODE extends ITERABLE {
             return null
         }
 
-        console.log('VAL:::');
-        console.log(this.val[index] instanceof INTEGER_NODE);
+        //console.log('VAL:::');
+        //console.log(this.val[index] instanceof INTEGER_NODE);
 
         return this.val[index].clone();
     }

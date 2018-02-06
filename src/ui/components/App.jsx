@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Container } from 'reactstrap';
+import {
+    Container,
+} from 'reactstrap';
 
 import Header from './Header';
+import Help from './Help';
 import TaskBar from './TaskBar';
 import Editor from './Editor';
 import Footer from './Footer';
@@ -21,7 +24,8 @@ class App extends React.Component {
             user: {
                 name: '',
                 group: ''
-            }
+            },
+            showHelp: false
         };
     }
 
@@ -65,13 +69,25 @@ class App extends React.Component {
     }
 
     onExit() {
-        if (confirm()) {
+        if (confirm('Вы действительно хотите выйти? После повторного входа прогресс выполнения будет потерян.')) {
             window.localStorage.removeItem('py-tracer');
 
             setTimeout(() => {
                 this.props.history.replace('/login');
             }, 100);
         }
+    }
+
+    showHelp() {
+        this.setState({
+            showHelp: true
+        });
+    }
+
+    hideHelp() {
+        this.setState({
+            showHelp: false
+        });
     }
 
     next() {
@@ -144,6 +160,11 @@ class App extends React.Component {
                     tasks={this.state.tasks}
                     user={this.state.user}
                     onExit={this.onExit.bind(this)}
+                    onHelp={this.showHelp.bind(this)}
+                />
+                <Help
+                    visible={this.state.showHelp}
+                    onClose={this.hideHelp.bind(this)}
                 />
                 <TaskBar
                     onNext={this.next.bind(this)}

@@ -7,7 +7,7 @@ class Header extends React.Component {
     render() {
         return (
             <Row className="tracer__header align-items-center">
-                <Col xs={12} md={7}>
+                <Col xs={12} md={6}>
                     <div className="header__logo">PyTracer</div>
                     <div className="header__user">
                         <div className="header__line">
@@ -22,9 +22,12 @@ class Header extends React.Component {
                         </div>
                     </div>
                 </Col>
-                <Col xs={12} md={5}>
+                <Col xs={12} md={6}>
                     <div className="header__menu float-right">
                         <a className="menu__link" href="#" onClick={this.props.onExit}>Выход</a>
+                    </div>
+                    <div className="header__menu float-right">
+                        <a className="menu__link" href="#" onClick={this.props.onHelp}>Помощь</a>
                     </div>
                     <div className="header__summary float-right">
                         Заданий выполнено: <strong>
