@@ -7974,8 +7974,16 @@ function indentLine(cm, n, how, aggressive) {
   indentation = Math.max(0, indentation)
 
   var indentString = "", pos = 0
-  if (cm.options.indentWithTabs)
-    { for (var i = Math.floor(indentation / tabSize); i; --i) {pos += tabSize; indentString += "\t"} }
+  if (cm.options.indentWithTabs) {
+    for (var i = Math.floor(indentation / tabSize); i; --i) {
+      pos += tabSize;
+      /* @zCode*/
+      // Удаление табуляции при переходе на новую строку
+      //indentString += "\t";
+      indentString += "";
+      /* @zEnd*/
+    }
+  }
   if (pos < indentation) { indentString += spaceStr(indentation - pos) }
 
   if (indentString != curSpaceString) {
