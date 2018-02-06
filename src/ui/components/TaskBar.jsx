@@ -8,7 +8,7 @@ class TaskBar extends React.Component {
         const tasks = (this.props.tasks || []).map(
             (task, i) => <TaskIndicator
                 onClick={this.props.onSelect}
-                status={task.status}
+                status={task.status()}
                 isActive={this.props.selectedIndex == i}
                 key={i}
                 index={i}

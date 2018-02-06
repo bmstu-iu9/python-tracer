@@ -10,13 +10,13 @@ function isEqual(line1, line2) {
 class Task {
 
     constructor(options = {}) {
-        this._source = options.source;
-        this._target = options.target;
-        this._input = options.input || '';
-        this._message = options.message || '';
-        this._attempts = options.attempts || 0;
-        this._maxAttempts = options.maxAttempts || 10;
-        this._status = options.status || Task.statuses.INITIAL;
+        this._source = options._source;
+        this._target = options._target;
+        this._input = options._input || '';
+        this._message = options._message ||'';
+        this._attempts = options._attempts || 0;
+        this._maxAttempts = options._maxAttempts || 10;
+        this._status = options._status || Task.statuses.INITIAL;
 
         this._solution = tracer(this._source, this._target);
     }
@@ -68,7 +68,7 @@ class Task {
         if (solution.length >= input.length) {
             let line = 0;
 
-            while (isEqual(solution[line] || '', input[line] || '')) {
+            while (isEqual(solution[line] || '', input[line] || '') && (solution[line] || input[line])) {
                 line++;
             }
 

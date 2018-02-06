@@ -85,8 +85,8 @@ export default {
         let target = 'gcd(78, 45)';
 
         return new Task({
-            source: gcd,
-            target: target
+            _source: gcd,
+            _target: target
         })
     },
 
@@ -94,8 +94,8 @@ export default {
         let target = 'hex(217)';
 
         return new Task({
-            source: hex,
-            target: target
+            _source: hex,
+            _target: target
         })
     },
 
@@ -103,8 +103,8 @@ export default {
         let target = 'remove_digit(166, 6)';
 
         return new Task({
-            source: removeDigit,
-            target: target
+            _source: removeDigit,
+            _target: target
         })
     },
 
@@ -112,8 +112,8 @@ export default {
         let target = 'factorize(75)';
 
         return new Task({
-            source: factorize,
-            target: target
+            _source: factorize,
+            _target: target
         })
     },
 
@@ -121,8 +121,8 @@ export default {
         let target = 'square_equal(49, 28, 53)';
 
         return new Task({
-            source: squareEqual,
-            target: target
+            _source: squareEqual,
+            _target: target
         })
     }
 };

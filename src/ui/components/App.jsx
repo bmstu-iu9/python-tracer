@@ -8,18 +8,27 @@ import TaskBar from './TaskBar';
 import Editor from './Editor';
 import Footer from './Footer';
 
+import Task from '../tasks/Task';
+
 class App extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            selectedIndex: 0,
-            tasks: this.props.tasks
+            selectedIndex: -1,
+            tasks: [],
+            user: {
+                name: '',
+                group: ''
+            }
         };
     }
 
     componentDidMount() {
+
+        this.onEnter(this.props);
+
         $(ReactDOM.findDOMNode(this)).find('.CodeMirror').each((index, elem) => {
 
             $(window).resize(() => {
@@ -31,6 +40,38 @@ class App extends React.Component {
                 );
             });
         });
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.onEnter(nextProps);
+    }
+
+    onEnter(props) {
+        try {
+            let userData = JSON.parse(window.localStorage.getItem('py-tracer'));
+
+            this.setState({
+                user: {
+                    name: userData.name,
+                    group: userData.group
+                },
+                tasks: userData.tasks.map(task => new Task(task)),
+                selectedIndex: 0
+            })
+        } catch (e) {
+            window.localStorage.removeItem('py-tracer');
+            props.history.replace('/login');
+        }
+    }
+
+    onExit() {
+        if (confirm()) {
+            window.localStorage.removeItem('py-tracer');
+
+            setTimeout(() => {
+                this.props.history.replace('/login');
+            }, 100);
+        }
     }
 
     next() {
@@ -61,7 +102,9 @@ class App extends React.Component {
                     return task
                 }
             )
-        })
+        });
+
+        this.updateStorageData();
     }
 
     updateTaskInput(selectedIndex, input) {
@@ -74,13 +117,34 @@ class App extends React.Component {
                     return task
                 }
             )
-        })
+        });
+
+        this.updateStorageData();
+    }
+
+    updateStorageData() {
+        try {
+            let userData = JSON.parse(window.localStorage.getItem('py-tracer'));
+
+            userData.tasks = this.state.tasks;
+
+            window.localStorage.setItem('py-tracer', JSON.stringify(userData));
+        } catch (e) {
+            alert('Произошла ошибка при сохранении данных. Пожалуйста, перезайдите в систему!');
+
+            window.localStorage.removeItem('py-tracer');
+            props.history.replace('/login');
+        }
     }
 
     render() {
         return (
             <Container className="tracer">
-                <Header tasks={this.state.tasks} user={{ name: 'Сергей Головань', group: 'ИУ9-82'}}/>
+                <Header
+                    tasks={this.state.tasks}
+                    user={this.state.user}
+                    onExit={this.onExit.bind(this)}
+                />
                 <TaskBar
                     onNext={this.next.bind(this)}
                     onPrev={this.prev.bind(this)}

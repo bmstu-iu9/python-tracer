@@ -24,7 +24,7 @@ class Header extends React.Component {
                 </Col>
                 <Col xs={12} md={5}>
                     <div className="header__menu float-right">
-                        <a className="menu__link" href="#">Выход</a>
+                        <a className="menu__link" href="#" onClick={this.props.onExit}>Выход</a>
                     </div>
                     <div className="header__summary float-right">
                         Заданий выполнено: <strong>

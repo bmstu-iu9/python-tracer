@@ -6,7 +6,7 @@ class TaskIndicator extends React.Component {
     getClass() {
         let classes = 'top__icon';
 
-        switch (this.props.status()) {
+        switch (this.props.status) {
             case Task.statuses.SUCCESS:
                 classes += ' top__icon--success';
                 break;

@@ -1,21 +1,15 @@
 import React from 'react';
-
 import ReactDOM from 'react-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
+
 import App from './components/App';
+import Login from './components/Login';
 
-import taskFactory from './tasks/TaskFactory';
-
-const tasks = [
-    taskFactory.GCD(true),
-    taskFactory.GCD(false),
-    taskFactory.HEX(),
-    taskFactory.SQUARE_EQUAL(),
-    taskFactory.SQUARE_EQUAL(),
-    taskFactory.REMOVE_DIGIT()
-];
-
-
-ReactDOM.render(
-    <App tasks={tasks}/>,
-    document.getElementById('app')
-);
+ReactDOM.render((
+    <HashRouter>
+        <Switch>
+            <Route exact path='/' component={App} onEnter={App.onEnter}/>
+            <Route path='/login' component={Login}/>
+        </Switch>
+    </HashRouter>
+), document.getElementById('app'));

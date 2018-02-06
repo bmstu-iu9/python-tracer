@@ -168,3 +168,23 @@ body {
   color: #606060;
   text-align: center;
 }
+.tracer__login {
+  margin-top: 33vh;
+  text-align: center;
+}
+.tracer__login .login__title {
+  color: black;
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  margin: 20px;
+}
+.tracer__login .login__button {
+  cursor: pointer;
+  width: 150px;
+}
+.tracer__login .col {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+}
