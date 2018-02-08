@@ -36,9 +36,9 @@ global.generateTasks = function (name, group) {
     return [
         generate('GCD', true),
         generate('GCD', false),
-        generate('HEX', false),
-        generate('SQUARE_EQUAL'),
-        generate('SQUARE_EQUAL'),
+        generate('HEX'),
+        generate('SQUARE_EQUAL', [1, 2]),
+        generate('SQUARE_EQUAL', [0, 1]),
         generate('REMOVE_DIGIT')
     ];
 };
