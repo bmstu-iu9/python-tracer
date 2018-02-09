@@ -8,6 +8,7 @@ function createFunction(name, argv, handler) {
     return new ASTNodes.FUNCTION_NODE(null, name, args, [], handler);
 }
 
+
 module.exports.len = createFunction('len', ['arr'], function(args, scope) {
     let arr = args[0],
         length = 0;

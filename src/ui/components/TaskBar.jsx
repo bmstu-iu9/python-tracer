@@ -17,7 +17,7 @@ class TaskBar extends React.Component {
 
         return (
             <Row className="tracer__taskBar align-items-center">
-                <Col xs={2}>
+                <Col xs={3}>
                     <Button disabled={this.props.selectedIndex == 0}
                             outline
                             color="secondary"
@@ -26,10 +26,10 @@ class TaskBar extends React.Component {
                         ❰❰ Назад
                     </Button>
                 </Col>
-                <Col xs={8}>
+                <Col xs={{ size: 6}}>
                     {tasks}
                 </Col>
-                <Col xs={2}>
+                <Col xs={3}>
                     <Button disabled={this.props.selectedIndex == this.props.tasks.length - 1}
                         outline color="secondary"
                         onClick={this.props.onNext}

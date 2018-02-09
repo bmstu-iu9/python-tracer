@@ -328,7 +328,7 @@ class STRING_NODE extends ITERABLE {
 
     cast(obj) {
         if (obj instanceof NUMERIC_NODE) {
-            return new STRING_NODE(obj.val + '');
+            return new STRING_NODE(obj.text() + '');
         } else if (obj instanceof STRING_NODE) {
             return obj;
         } else if (obj instanceof BOOLEAN_NODE) {

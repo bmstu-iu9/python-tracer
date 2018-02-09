@@ -19,6 +19,16 @@ const tasks = {
     REMOVE_DIGIT: {
         source: require('./sources/remove_digit'),
         generator: require('./generators/remove_digit')
+    },
+
+    FACTORIZE: {
+        source: require('./sources/factorize'),
+        generator: require('./generators/factorize')
+    },
+
+    JOIN: {
+        source: require('./sources/join'),
+        generator: require('./generators/join')
     }
 };
 
@@ -39,6 +49,8 @@ global.generateTasks = function (name, group) {
         generate('HEX'),
         generate('SQUARE_EQUAL', [1, 2]),
         generate('SQUARE_EQUAL', [0, 1]),
-        generate('REMOVE_DIGIT')
+        generate('REMOVE_DIGIT'),
+        generate('FACTORIZE'),
+        generate('JOIN')
     ];
 };

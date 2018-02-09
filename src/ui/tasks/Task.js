@@ -1,8 +1,8 @@
 function isEqual(line1, line2) {
     let regExp = /\s+/g;
 
-    line1 = line1.replace(regExp, '');
-    line2 = line2.replace(regExp, '');
+    line1 = line1.replace(regExp, '').replace(/"/g, `'`);
+    line2 = line2.replace(regExp, '').replace(/"/g, `'`);
 
     return line1 === line2;
 }
