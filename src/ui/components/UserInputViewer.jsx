@@ -111,6 +111,7 @@ class UserInputViewer extends React.Component {
                     <strong>{this.getStatusMessage()}</strong> {this.props.task ? this.props.task.message() : ""}
                 </Alert>
                 <CodeMirror
+                    className="tracer__userInput"
                     disabled={!this.getEnabled()}
                     value={this.state.code}
                     onBeforeChange={this.onChange.bind(this)}

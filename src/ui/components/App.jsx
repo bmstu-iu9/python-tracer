@@ -128,7 +128,7 @@ class App extends React.Component {
             tasks: this.state.tasks.map(
                 (task, i) => {
                     if (selectedIndex == i) {
-                        task._input = input;
+                        task._input = input.replace(/(  )+/g, '');
                     }
                     return task
                 }

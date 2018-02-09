@@ -33,9 +33,9 @@
 
 export default function (rootsCount) {
     let gen = () => ({
-        a: (Math.random() * 100 < 10) ? 0 : (Math.random() * 200 - 100 >> 0),
-        b: Math.random() * 200 - 100 >> 0,
-        c: Math.random() * 200 - 100 >> 0
+        a: (Math.random() * 100 < 10) ? 0 : ((Math.random() * 200 - 100) >> 0),
+        b: (Math.random() * 200 - 100) >> 0,
+        c: (Math.random() * 200 - 100) >> 0
     });
 
     let isqrt = (n) => {
@@ -75,7 +75,7 @@ export default function (rootsCount) {
 
     do {
         var args = gen();
-    } while (isValid(args));
+    } while (!isValid(args));
 
     return `square_equal(${args.a}, ${args.b}, ${args.c})`;
 }
