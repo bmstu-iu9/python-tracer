@@ -63,22 +63,20 @@ class Task {
     verify(input) {
         let solution = this._solution.split('\n');
 
-        input = (input || this._input).split('\n');
+        input = (input || this._input).trim().split('\n');
 
-        if (solution.length >= input.length) {
-            let line = 0;
+        debugger;
 
-            while (isEqual(solution[line] || '', input[line] || '') && (solution[line] || input[line])) {
-                line++;
-            }
+        let line = 0;
 
-            if (line == solution.length) {
-                this.message(Task.statuses.SUCCESS, `Задание успешно выполнено!`);
-            } else {
-                this.message(Task.statuses.ERROR, `Неверные значения в строке ${line + 1}`);
-            }
+        while (isEqual(solution[line] || '', input[line] || '') && (solution[line] || input[line])) {
+            line++;
+        }
+
+        if (line == solution.length) {
+            this.message(Task.statuses.SUCCESS, `Задание успешно выполнено!`);
         } else {
-            this.message(Task.statuses.ERROR, `Неверные значения в строке ${solution.length}`);
+            this.message(Task.statuses.ERROR, `Неверные значения в строке ${Math.min(line + 1, solution.length)}`);
         }
 
         return this;

@@ -90,7 +90,7 @@ class Editor extends React.Component {
                         </div>
 
                         <div className="content__block content__block--left content__link" hidden={this.getEnabled()}>
-                            <a href="#" onClick={this.toggleShowSolution.bind(this)}>{this.getShowSolutionButtonText()}</a>
+                            <a href="javascript:;" onClick={this.toggleShowSolution.bind(this)}>{this.getShowSolutionButtonText()}</a>
                         </div>
 
                         <div className="content__block content__block--right">

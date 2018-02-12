@@ -24,10 +24,10 @@ class Header extends React.Component {
                 </Col>
                 <Col xs={12} md={6}>
                     <div className="header__menu float-right">
-                        <a className="menu__link" href="#" onClick={this.props.onExit}>Выход</a>
+                        <a className="menu__link" href="javascript:;" onClick={this.props.onExit}>Выход</a>
                     </div>
                     <div className="header__menu float-right">
-                        <a className="menu__link" href="#" onClick={this.props.onHelp}>Помощь</a>
+                        <a className="menu__link" href="javascript:;" onClick={this.props.onHelp}>Помощь</a>
                     </div>
                     <div className="header__summary float-right">
                         Заданий выполнено: <strong>

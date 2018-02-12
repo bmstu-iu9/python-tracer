@@ -44,6 +44,14 @@ class App extends React.Component {
                 );
             });
         });
+
+        // $('a').mousedown(function(e) {
+        //     if (e.which === 2) {
+        //         e.preventDefault();
+        //         e.stopPropagation();
+        //         e.stopImmediatePropagation();
+        //     }
+        // });
     }
 
     componentWillReceiveProps(nextProps) {
