@@ -65,8 +65,6 @@ class Task {
 
         input = (input || this._input).trim().split('\n');
 
-        debugger;
-
         let line = 0;
 
         while (isEqual(solution[line] || '', input[line] || '') && (solution[line] || input[line])) {

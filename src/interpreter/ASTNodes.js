@@ -647,14 +647,21 @@ class ASSIGN_NODE extends NODE {
         if (!left.length) left = [left];
         if (!right.length) right = [right];
 
+        let valueMap = {};
+
         left.forEach((stmt, i) => {
             if ((stmt instanceof IDENT_NODE) && right[i]) {
                 res = right[i].value();
-                outerScope.putSymbol(stmt.name, res);
+
+                valueMap[stmt.name] = res;
 
                 this._text = `${this.line()}. ${stmt.name} = ${res.text()}`;
             }
         });
+
+        for (let name in valueMap) {
+            outerScope.putSymbol(name, valueMap[name]);
+        }
 
         return res;
     }

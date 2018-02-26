@@ -11,13 +11,18 @@ global.tracer = function(sourceCode, destStatement) {
     const parser = new Parser.PythonParser(tokens);
     const builder = new ASTBuilder();
 
-    const program = builder.buildProgram(parser.file_input());
+    try {
+        const program = builder.buildProgram(parser.file_input());
 
-    Object.keys(libraryFunctions).forEach(
-        name => program.include(name, libraryFunctions[name])
-    );
+        Object.keys(libraryFunctions).forEach(
+            name => program.include(name, libraryFunctions[name])
+        );
 
-    return program.reduce();
+        return program.reduce();
+    } catch (error) {
+        alert('Ошибка интерпретации исходного текста программы. Возможно, в исходном тексте имеются неподдериваемые конструкции.');
+        console.log(error);
+    }
 };
 
 
