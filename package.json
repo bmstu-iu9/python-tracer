@@ -19,6 +19,7 @@
     "gulp-filter": "^6.0.0",
     "gulp-newer": "^1.4.0",
     "gulp-notify": "^3.2.0",
+    "lodash.template": ">=4.5.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "vinyl-source-stream": "^2.0.0"
@@ -29,6 +30,7 @@
     "babel-preset-react": "^6.24.1",
     "bootstrap": "^4.3.1",
     "codemirror": "^5.48.0",
+    "lodash": ">=4.17.13",
     "react-bootstrap": "^1.0.0-beta.5",
     "react-codemirror": "^1.0.0",
     "react-codemirror2": "^6.0.0",
