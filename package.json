@@ -30,7 +30,7 @@
     "babel-preset-react": "^6.24.1",
     "bootstrap": "^4.5.0",
     "codemirror": "^5.55.0",
-    "lodash": ">=4.17.15",
+    "lodash": ">=4.17.19",
     "npm-check-updates": "^7.0.1",
     "react-bootstrap": "^1.1.1",
     "react-codemirror": "^1.0.0",
