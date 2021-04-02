@@ -20,6 +20,7 @@
     "gulp-newer": "^1.4.0",
     "gulp-notify": "^3.2.0",
     "lodash.template": ">=4.5.0",
+    "node-notifier": ">=8.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "vinyl-source-stream": "^2.0.0"
