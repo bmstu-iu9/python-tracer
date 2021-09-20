@@ -29,7 +29,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "bootstrap": "^5.1.1",
-    "codemirror": "^5.62.3",
+    "codemirror": "^5.63.0",
     "lodash": ">=4.17.21",
     "npm-check-updates": "^11.8.5",
     "react-bootstrap": "^1.6.3",
