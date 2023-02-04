@@ -15,7 +15,7 @@
     "codemirror": "^5.65.1",
     "lodash": ">=4.17.21",
     "node-fetch": ">=3.2.10",
-    "npm-check-updates": "^12.3.0",
+    "npm-check-updates": "^16.6.3",
     "react-bootstrap": "^2.1.2",
     "react-codemirror": "^1.0.0",
     "react-codemirror2": "^7.2.1",
