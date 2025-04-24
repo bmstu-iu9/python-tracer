@@ -19,7 +19,7 @@
     "react-bootstrap": "^2.1.2",
     "react-codemirror": "^1.0.0",
     "react-codemirror2": "^7.2.1",
-    "react-router-dom": "^6.2.1",
+    "react-router-dom": "^7.5.2",
     "react-transition-group": "^4.4.2",
     "reactstrap": "^9.0.1",
     "watchify": "^4.0.0"
